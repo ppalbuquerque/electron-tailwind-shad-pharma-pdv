@@ -8,7 +8,7 @@ export const Route = createFileRoute('/')({
 function Index(): ReactNode {
   return (
     <div className="p-2">
-      <h3>Tela inicial</h3>
+      <p>Tela inicial</p>
     </div>
   )
 }
