@@ -6,5 +6,5 @@ export const Route = createFileRoute('/checkout/open')({
 })
 
 function RouteComponent(): ReactNode {
-  return <div>Abrir Checkout</div>
+  return <p>Abrir Checkout</p>
 }
