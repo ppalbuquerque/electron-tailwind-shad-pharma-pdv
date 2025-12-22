@@ -41,7 +41,7 @@ const routes = [
   {
     title: 'Venda',
     icon: BanknoteArrowUp,
-    url: '/sale',
+    url: '/orders/create',
     hotkey: 'F3'
   },
   {

@@ -33,7 +33,7 @@ function useOpenCheckoutViewModel(): OpenCheckoutViewModel {
 
       await openCheckoutMutation({ initialValue: data.initialValue })
       toast.success('Caixa aberto com sucesso')
-      await router.navigate({ to: '/' })
+      await router.navigate({ to: '/orders/create' })
     } catch (error: unknown) {
       console.log(error)
       toast.error('Error ao abrir o caixa')
