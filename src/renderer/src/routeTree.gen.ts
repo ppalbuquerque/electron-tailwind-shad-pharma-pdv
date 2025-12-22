@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OrdersCreateRouteImport } from './routes/orders/create'
 import { Route as CheckoutOpenRouteImport } from './routes/checkout/open'
 import { Route as CheckoutCloseRouteImport } from './routes/checkout/close'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersCreateRoute = OrdersCreateRouteImport.update({
+  id: '/orders/create',
+  path: '/orders/create',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutOpenRoute = CheckoutOpenRouteImport.update({
@@ -33,30 +39,34 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/checkout/close': typeof CheckoutCloseRoute
   '/checkout/open': typeof CheckoutOpenRoute
+  '/orders/create': typeof OrdersCreateRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/checkout/close': typeof CheckoutCloseRoute
   '/checkout/open': typeof CheckoutOpenRoute
+  '/orders/create': typeof OrdersCreateRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/checkout/close': typeof CheckoutCloseRoute
   '/checkout/open': typeof CheckoutOpenRoute
+  '/orders/create': typeof OrdersCreateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/checkout/close' | '/checkout/open'
+  fullPaths: '/' | '/checkout/close' | '/checkout/open' | '/orders/create'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/checkout/close' | '/checkout/open'
-  id: '__root__' | '/' | '/checkout/close' | '/checkout/open'
+  to: '/' | '/checkout/close' | '/checkout/open' | '/orders/create'
+  id: '__root__' | '/' | '/checkout/close' | '/checkout/open' | '/orders/create'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CheckoutCloseRoute: typeof CheckoutCloseRoute
   CheckoutOpenRoute: typeof CheckoutOpenRoute
+  OrdersCreateRoute: typeof OrdersCreateRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders/create': {
+      id: '/orders/create'
+      path: '/orders/create'
+      fullPath: '/orders/create'
+      preLoaderRoute: typeof OrdersCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout/open': {
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CheckoutCloseRoute: CheckoutCloseRoute,
   CheckoutOpenRoute: CheckoutOpenRoute,
+  OrdersCreateRoute: OrdersCreateRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
