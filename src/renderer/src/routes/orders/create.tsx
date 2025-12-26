@@ -5,11 +5,16 @@ import { ShoppingCart } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
+import { AddMedicationDialog } from '@/sections/orders/create/add-medication-dialog'
+import { useCreateOrderViewModel } from '@/effects/orders/useCreateOrder.viewmodel'
+
 export const Route = createFileRoute('/orders/create')({
   component: CreateOrder
 })
 
 function CreateOrder(): ReactNode {
+  const { onInputSearchConfirm, searchMedicationDialogIsOpen } = useCreateOrderViewModel()
+
   return (
     <div className="flex justify-center mt-4">
       <div className="bg-white rounded-sm p-12 border-slate-300 border text-black w-[90%]">
@@ -24,7 +29,9 @@ function CreateOrder(): ReactNode {
           <span className="text-base text-slate-400">Procure por medicamentos</span>
         </div>
         <hr className="mb-8 mt-8 text-slate-300" />
-        <Input type="search" placeholder="Procure o medicamento pelo nome" />
+        <form onSubmit={onInputSearchConfirm}>
+          <Input type="search" placeholder="Procure o medicamento pelo nome" />
+        </form>
         <div className="flex flex-col items-center pt-2 pb-2 mt-4 bg-emerald-200 rounded-sm">
           <h2 className="font-semibold text-emerald-900 text-lg">Total</h2>
           <p className="font-bold text-2xl text-emerald-600">R$ 0.00</p>
@@ -38,6 +45,7 @@ function CreateOrder(): ReactNode {
           </Button>
         </div>
       </div>
+      <AddMedicationDialog open={searchMedicationDialogIsOpen} />
     </div>
   )
 }
