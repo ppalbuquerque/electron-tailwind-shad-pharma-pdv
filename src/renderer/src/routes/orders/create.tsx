@@ -13,7 +13,14 @@ export const Route = createFileRoute('/orders/create')({
 })
 
 function CreateOrder(): ReactNode {
-  const { onInputSearchConfirm, searchMedicationDialogIsOpen } = useCreateOrderViewModel()
+  const {
+    onInputSearchConfirm,
+    register,
+    setSearchValue,
+    searchMedicationDialogIsOpen,
+    searchData,
+    searchValue
+  } = useCreateOrderViewModel()
 
   return (
     <div className="flex justify-center mt-4">
@@ -30,7 +37,11 @@ function CreateOrder(): ReactNode {
         </div>
         <hr className="mb-8 mt-8 text-slate-300" />
         <form onSubmit={onInputSearchConfirm}>
-          <Input type="search" placeholder="Procure o medicamento pelo nome" />
+          <Input
+            type="search"
+            placeholder="Procure o medicamento pelo nome"
+            {...register('medicationName')}
+          />
         </form>
         <div className="flex flex-col items-center pt-2 pb-2 mt-4 bg-emerald-200 rounded-sm">
           <h2 className="font-semibold text-emerald-900 text-lg">Total</h2>
@@ -45,7 +56,12 @@ function CreateOrder(): ReactNode {
           </Button>
         </div>
       </div>
-      <AddMedicationDialog open={searchMedicationDialogIsOpen} />
+      <AddMedicationDialog
+        open={searchMedicationDialogIsOpen}
+        medicationTableData={searchData}
+        defaultSearchValue={searchValue}
+        setSearchValue={setSearchValue}
+      />
     </div>
   )
 }

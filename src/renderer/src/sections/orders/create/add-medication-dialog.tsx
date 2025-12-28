@@ -1,28 +1,43 @@
 import { ReactNode } from 'react'
 
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Medication } from '@/types/medication'
+
 import { DataTable } from './data-table'
-import { columns, Medication } from './columns'
+import { columns } from './search-medication-columns'
 
 interface AddMedicationDialogProps {
   open?: boolean
+  medicationTableData: Medication[]
+  defaultSearchValue: string
+  setSearchValue: (term: string) => void
 }
 
-const MOCK_DATA: Medication[] = [
-  {
-    amount: 10,
-    boxType: 'Caixa',
-    name: 'Dipirona',
-    value: 10
-  }
-]
-
-export function AddMedicationDialog({ open }: AddMedicationDialogProps): ReactNode {
+export function AddMedicationDialog({
+  open,
+  medicationTableData,
+  defaultSearchValue,
+  setSearchValue
+}: AddMedicationDialogProps): ReactNode {
   return (
     <Dialog open={open}>
-      <DialogContent className="bg-black">
+      <DialogContent className="bg-white">
+        <DialogHeader>
+          <DialogTitle className="text-black">Lista de Medicamentos</DialogTitle>
+        </DialogHeader>
         <div>
-          <DataTable data={MOCK_DATA} columns={columns} />
+          <DataTable data={medicationTableData} columns={columns} />
+          <hr className="mb-8 mt-8 text-slate-300" />
+          <div>
+            <Input
+              type="search"
+              placeholder="Procure o medicamento pelo nome"
+              className="border-slate-300 text-slate-800"
+              defaultValue={defaultSearchValue}
+              onChange={(event) => setSearchValue(event.target.value)}
+            />
+          </div>
         </div>
       </DialogContent>
     </Dialog>

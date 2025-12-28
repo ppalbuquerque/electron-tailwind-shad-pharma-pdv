@@ -1,11 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table'
 
-export type Medication = {
-  name: string
-  boxType: 'Caixa' | 'Unidade'
-  value: number
-  amount: number
-}
+import { Medication } from '@/types/medication'
 
 export const columns: ColumnDef<Medication>[] = [
   {
@@ -13,12 +8,8 @@ export const columns: ColumnDef<Medication>[] = [
     header: 'Produto'
   },
   {
-    accessorKey: 'boxType',
-    header: 'Unidade'
-  },
-  {
-    accessorKey: 'value',
-    header: () => <div className="text-right">Valor</div>,
+    accessorKey: 'box_price',
+    header: () => <div>Valor</div>,
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue('value'))
       const formatted = new Intl.NumberFormat('pt-Br', {
@@ -26,11 +17,11 @@ export const columns: ColumnDef<Medication>[] = [
         currency: 'BRL'
       }).format(amount)
 
-      return <div className="text-right">{formatted}</div>
+      return <div>{row.getValue('box_price')}</div>
     }
   },
   {
-    accessorKey: 'amount',
+    accessorKey: 'stock_availability',
     header: 'Quantidade'
   }
 ]
