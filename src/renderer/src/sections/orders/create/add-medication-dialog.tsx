@@ -3,8 +3,8 @@ import { ReactNode } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Medication } from '@/types/medication'
+import { DataTable } from '@/components/ui/data-table'
 
-import { DataTable } from './data-table'
 import { columns } from './search-medication-columns'
 
 interface AddMedicationDialogProps {
