@@ -20,14 +20,22 @@ export function AddMedicationDialog({
   defaultSearchValue,
   setSearchValue
 }: AddMedicationDialogProps): ReactNode {
+  const handleOnConfirmSelection = (row: Medication): void => {
+    console.log('Selected Row::', row)
+  }
+
   return (
     <Dialog open={open}>
-      <DialogContent className="bg-white">
+      <DialogContent className="bg-white max-w-5xl!">
         <DialogHeader>
           <DialogTitle className="text-black">Lista de Medicamentos</DialogTitle>
         </DialogHeader>
         <div>
-          <DataTable data={medicationTableData} columns={columns} />
+          <DataTable
+            data={medicationTableData}
+            columns={columns}
+            onConfirmSelection={handleOnConfirmSelection}
+          />
           <hr className="mb-8 mt-8 text-slate-300" />
           <div>
             <Input
