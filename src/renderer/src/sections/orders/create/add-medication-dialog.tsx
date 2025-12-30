@@ -12,18 +12,16 @@ interface AddMedicationDialogProps {
   medicationTableData: Medication[]
   defaultSearchValue: string
   setSearchValue: (term: string) => void
+  onMedicationItemConfirm: (medication: Medication) => void
 }
 
 export function AddMedicationDialog({
   open,
   medicationTableData,
   defaultSearchValue,
-  setSearchValue
+  setSearchValue,
+  onMedicationItemConfirm
 }: AddMedicationDialogProps): ReactNode {
-  const handleOnConfirmSelection = (row: Medication): void => {
-    console.log('Selected Row::', row)
-  }
-
   return (
     <Dialog open={open}>
       <DialogContent className="bg-white max-w-5xl!">
@@ -34,7 +32,7 @@ export function AddMedicationDialog({
           <DataTable
             data={medicationTableData}
             columns={columns}
-            onConfirmSelection={handleOnConfirmSelection}
+            onConfirmSelection={onMedicationItemConfirm}
           />
           <hr className="mb-8 mt-8 text-slate-300" />
           <div>

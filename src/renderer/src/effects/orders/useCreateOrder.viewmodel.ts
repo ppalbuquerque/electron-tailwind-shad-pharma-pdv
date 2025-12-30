@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import { MEDICATION_QUERY_KEYS } from '@/services/medication/medication.query.keys'
 import { MedicationService, SearchResponse } from '@/services/medication/medication.service'
 import { useDebounce } from '@/hooks/use-debounce'
+import { Medication } from '@/types/medication'
 
 interface SearchInputForm {
   medicationName: string
@@ -15,15 +16,18 @@ interface CreateOrderViewModel {
   onInputSearchConfirm: () => void
   register: UseFormRegister<SearchInputForm>
   setSearchValue: (term: string) => void
+  handleAddOrderItens: (medication: Medication) => void
   searchMedicationDialogIsOpen: boolean
   searchData: SearchResponse
   searchValue: string
+  orderItens: Medication[]
 }
 
 function useCreateOrderViewModel(): CreateOrderViewModel {
   const { handleSubmit, register } = useForm<SearchInputForm>()
   const [searchMedicationDialogIsOpen, setSearchMedicationDialogIsOpen] = useState(false)
   const [searchValue, setSearchValue] = useState('')
+  const [orderItens, setOrderItens] = useState<Medication[]>([])
 
   const debouncedSearchTerm = useDebounce(searchValue)
 
@@ -42,13 +46,19 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     setSearchValue(data.medicationName)
   }
 
+  const handleAddOrderItens = (medication: Medication): void => {
+    setOrderItens((orderItens) => [...orderItens, medication])
+  }
+
   return {
     searchMedicationDialogIsOpen,
     searchData: searchData ?? [],
     searchValue: debouncedSearchTerm,
+    orderItens,
     onInputSearchConfirm: handleSubmit(onInputSearchConfirm),
     register,
-    setSearchValue
+    setSearchValue,
+    handleAddOrderItens
   }
 }
 
