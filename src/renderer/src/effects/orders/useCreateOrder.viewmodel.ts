@@ -5,8 +5,12 @@ import { useQuery } from '@tanstack/react-query'
 
 import { MEDICATION_QUERY_KEYS } from '@/services/medication/medication.query.keys'
 import { MedicationService, SearchResponse } from '@/services/medication/medication.service'
+
 import { useDebounce } from '@/hooks/use-debounce'
+
 import { Medication } from '@/types/medication'
+
+import { useCreateOrder } from '@/contexts/create-order/create-order.context'
 
 interface SearchInputForm {
   medicationName: string
@@ -17,10 +21,12 @@ interface CreateOrderViewModel {
   register: UseFormRegister<SearchInputForm>
   setSearchValue: (term: string) => void
   handleAddOrderItens: (medication: Medication) => void
+  handleOnMedicationDialogConfirm: (medication: Medication) => void
   searchMedicationDialogIsOpen: boolean
   searchData: SearchResponse
   searchValue: string
   orderItens: Medication[]
+  selectedOrderItem: Medication | undefined
 }
 
 function useCreateOrderViewModel(): CreateOrderViewModel {
@@ -28,6 +34,7 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
   const [searchMedicationDialogIsOpen, setSearchMedicationDialogIsOpen] = useState(false)
   const [searchValue, setSearchValue] = useState('')
   const [orderItens, setOrderItens] = useState<Medication[]>([])
+  const { dispatch, state } = useCreateOrder()
 
   const debouncedSearchTerm = useDebounce(searchValue)
 
@@ -46,6 +53,10 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     setSearchValue(data.medicationName)
   }
 
+  const handleOnMedicationDialogConfirm = (medication: Medication): void => {
+    dispatch({ type: 'selectOrderItem', item: medication })
+  }
+
   const handleAddOrderItens = (medication: Medication): void => {
     setOrderItens((orderItens) => [...orderItens, medication])
   }
@@ -55,10 +66,12 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     searchData: searchData ?? [],
     searchValue: debouncedSearchTerm,
     orderItens,
+    selectedOrderItem: state.selectedOrderItem,
     onInputSearchConfirm: handleSubmit(onInputSearchConfirm),
     register,
     setSearchValue,
-    handleAddOrderItens
+    handleAddOrderItens,
+    handleOnMedicationDialogConfirm
   }
 }
 

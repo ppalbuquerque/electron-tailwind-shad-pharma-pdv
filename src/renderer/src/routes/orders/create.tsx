@@ -8,13 +8,16 @@ import { DataTable } from '@/components/ui/data-table'
 import { AddMedicationDialog } from '@/sections/orders/create/add-medication-dialog'
 import { EmptyOrderItensTable } from '@/sections/orders/create/empty-order-itens-table'
 import { columns } from '@/sections/orders/create/order-itens-columns'
+import { AddOrderItem } from '@/sections/orders/create/add-order-item'
 
 import { useCreateOrderViewModel } from '@/effects/orders/useCreateOrder.viewmodel'
 
 import { Medication } from '@/types/medication'
 
+import { CreateOrderProvider } from '@/contexts/create-order/create-order.context'
+
 export const Route = createFileRoute('/orders/create')({
-  component: CreateOrder
+  component: CreateOrderHOC
 })
 
 function renderTableContent(orderItens: Medication[]): ReactNode {
@@ -30,11 +33,11 @@ function CreateOrder(): ReactNode {
     onInputSearchConfirm,
     register,
     setSearchValue,
-    handleAddOrderItens,
     searchMedicationDialogIsOpen,
     searchData,
     searchValue,
-    orderItens
+    orderItens,
+    selectedOrderItem
   } = useCreateOrderViewModel()
 
   return (
@@ -46,6 +49,7 @@ function CreateOrder(): ReactNode {
         <hr className="mt-8 mb-8 text-slate-300" />
         {renderTableContent(orderItens)}
         <hr className="mb-8 mt-8 text-slate-300" />
+        {selectedOrderItem ? <AddOrderItem /> : null}
         <form onSubmit={onInputSearchConfirm}>
           <Input
             type="search"
@@ -71,8 +75,15 @@ function CreateOrder(): ReactNode {
         medicationTableData={searchData}
         defaultSearchValue={searchValue}
         setSearchValue={setSearchValue}
-        onMedicationItemConfirm={handleAddOrderItens}
       />
     </div>
+  )
+}
+
+function CreateOrderHOC(): ReactNode {
+  return (
+    <CreateOrderProvider>
+      <CreateOrder />
+    </CreateOrderProvider>
   )
 }

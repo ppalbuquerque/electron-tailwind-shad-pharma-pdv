@@ -2,8 +2,11 @@ import { ReactNode } from 'react'
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Medication } from '@/types/medication'
 import { DataTable } from '@/components/ui/data-table'
+
+import { Medication } from '@/types/medication'
+
+import { useCreateOrderViewModel } from '@/effects/orders/useCreateOrder.viewmodel'
 
 import { columns } from './search-medication-columns'
 
@@ -12,16 +15,16 @@ interface AddMedicationDialogProps {
   medicationTableData: Medication[]
   defaultSearchValue: string
   setSearchValue: (term: string) => void
-  onMedicationItemConfirm: (medication: Medication) => void
 }
 
 export function AddMedicationDialog({
   open,
   medicationTableData,
   defaultSearchValue,
-  setSearchValue,
-  onMedicationItemConfirm
+  setSearchValue
 }: AddMedicationDialogProps): ReactNode {
+  const { handleOnMedicationDialogConfirm } = useCreateOrderViewModel()
+
   return (
     <Dialog open={open}>
       <DialogContent className="bg-white max-w-5xl!">
@@ -32,7 +35,7 @@ export function AddMedicationDialog({
           <DataTable
             data={medicationTableData}
             columns={columns}
-            onConfirmSelection={onMedicationItemConfirm}
+            onConfirmSelection={handleOnMedicationDialogConfirm}
           />
           <hr className="mb-8 mt-8 text-slate-300" />
           <div>
