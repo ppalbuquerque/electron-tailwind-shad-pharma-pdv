@@ -12,7 +12,7 @@ import { AddOrderItem } from '@/sections/orders/create/add-order-item'
 
 import { useCreateOrderViewModel } from '@/effects/orders/useCreateOrder.viewmodel'
 
-import { Medication } from '@/types/medication'
+import { OrderItem } from '@/types/orderItem'
 
 import { CreateOrderProvider } from '@/contexts/create-order/create-order.context'
 
@@ -20,7 +20,7 @@ export const Route = createFileRoute('/orders/create')({
   component: CreateOrderHOC
 })
 
-function renderTableContent(orderItens: Medication[]): ReactNode {
+function renderTableContent(orderItens: OrderItem[]): ReactNode {
   if (orderItens.length === 0) {
     return <EmptyOrderItensTable />
   }

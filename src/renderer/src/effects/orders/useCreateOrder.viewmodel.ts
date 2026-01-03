@@ -9,6 +9,7 @@ import { MedicationService, SearchResponse } from '@/services/medication/medicat
 import { useDebounce } from '@/hooks/use-debounce'
 
 import { Medication } from '@/types/medication'
+import { OrderItem } from '@/types/orderItem'
 
 import { useCreateOrder } from '@/contexts/create-order/create-order.context'
 
@@ -20,12 +21,11 @@ interface CreateOrderViewModel {
   onInputSearchConfirm: () => void
   register: UseFormRegister<SearchInputForm>
   setSearchValue: (term: string) => void
-  handleAddOrderItens: (medication: Medication) => void
   handleOnMedicationDialogConfirm: (medication: Medication) => void
   searchMedicationDialogIsOpen: boolean
   searchData: SearchResponse
   searchValue: string
-  orderItens: Medication[]
+  orderItens: OrderItem[]
   selectedMedication: Medication | undefined
 }
 
@@ -33,7 +33,6 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
   const { handleSubmit, register } = useForm<SearchInputForm>()
   const [searchMedicationDialogIsOpen, setSearchMedicationDialogIsOpen] = useState(false)
   const [searchValue, setSearchValue] = useState('')
-  const [orderItens, setOrderItens] = useState<Medication[]>([])
   const { dispatch, state } = useCreateOrder()
 
   const debouncedSearchTerm = useDebounce(searchValue)
@@ -58,20 +57,15 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     dispatch({ type: 'selectOrderItem', item: medication })
   }
 
-  const handleAddOrderItens = (medication: Medication): void => {
-    setOrderItens((orderItens) => [...orderItens, medication])
-  }
-
   return {
     searchMedicationDialogIsOpen,
     searchData: searchData ?? [],
     searchValue: debouncedSearchTerm,
-    orderItens,
+    orderItens: state.items,
     selectedMedication: state.selectedMedication,
     onInputSearchConfirm: handleSubmit(onInputSearchConfirm),
     register,
     setSearchValue,
-    handleAddOrderItens,
     handleOnMedicationDialogConfirm
   }
 }

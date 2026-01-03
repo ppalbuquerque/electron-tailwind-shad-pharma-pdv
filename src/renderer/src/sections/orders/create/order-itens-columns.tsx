@@ -1,27 +1,27 @@
 import { ColumnDef } from '@tanstack/react-table'
 
-import { Medication } from '@/types/medication'
+import { OrderItem } from '@/types/orderItem'
 
-export const columns: ColumnDef<Medication>[] = [
+export const columns: ColumnDef<OrderItem>[] = [
   {
-    accessorKey: 'name',
+    accessorKey: 'medication.name',
     header: 'Produto'
   },
   {
-    accessorKey: 'box_price',
+    accessorKey: 'subtotal',
     header: () => <div>Valor</div>,
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('value'))
+      const subtotal: number = row.getValue('subtotal')
       const formatted = new Intl.NumberFormat('pt-Br', {
         style: 'currency',
         currency: 'BRL'
-      }).format(amount)
+      }).format(subtotal)
 
-      return <div>{row.getValue('box_price')}</div>
+      return <div>{formatted}</div>
     }
   },
   {
-    accessorKey: 'stock_availability',
+    accessorKey: 'quantity',
     header: 'Quantidade'
   }
 ]
