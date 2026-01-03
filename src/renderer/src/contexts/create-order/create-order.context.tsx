@@ -2,15 +2,16 @@
 import { createContext, useReducer, use, ReactNode } from 'react'
 
 import { Medication } from '@/types/medication'
+import { OrderItem } from '@/types/orderItem'
 
 type Action =
-  | { type: 'addItem'; item: Medication }
+  | { type: 'addItem'; item: OrderItem }
   | { type: 'removeItem' }
   | { type: 'selectOrderItem'; item: Medication }
 type Dispatch = (action: Action) => void
 type State = {
-  items: Medication[]
-  selectedOrderItem: Medication | undefined
+  items: OrderItem[]
+  selectedMedication: Medication | undefined
 }
 
 interface CreateOrderContext {
@@ -22,7 +23,7 @@ const CreateOrderContext = createContext<CreateOrderContext | undefined>(undefin
 
 const initialStateValue: State = {
   items: [],
-  selectedOrderItem: undefined
+  selectedMedication: undefined
 }
 
 function reducer(state: State, action: Action): State {
@@ -31,7 +32,7 @@ function reducer(state: State, action: Action): State {
       return { ...state, items: [...state.items, action.item] }
     }
     case 'selectOrderItem': {
-      return { ...state, selectedOrderItem: action.item }
+      return { ...state, selectedMedication: action.item }
     }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`)

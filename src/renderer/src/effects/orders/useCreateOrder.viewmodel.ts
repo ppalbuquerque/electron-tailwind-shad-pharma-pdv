@@ -26,7 +26,7 @@ interface CreateOrderViewModel {
   searchData: SearchResponse
   searchValue: string
   orderItens: Medication[]
-  selectedOrderItem: Medication | undefined
+  selectedMedication: Medication | undefined
 }
 
 function useCreateOrderViewModel(): CreateOrderViewModel {
@@ -54,6 +54,7 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
   }
 
   const handleOnMedicationDialogConfirm = (medication: Medication): void => {
+    setSearchMedicationDialogIsOpen(false)
     dispatch({ type: 'selectOrderItem', item: medication })
   }
 
@@ -66,7 +67,7 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     searchData: searchData ?? [],
     searchValue: debouncedSearchTerm,
     orderItens,
-    selectedOrderItem: state.selectedOrderItem,
+    selectedMedication: state.selectedMedication,
     onInputSearchConfirm: handleSubmit(onInputSearchConfirm),
     register,
     setSearchValue,

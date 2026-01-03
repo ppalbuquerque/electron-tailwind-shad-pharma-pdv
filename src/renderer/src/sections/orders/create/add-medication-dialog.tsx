@@ -6,14 +6,13 @@ import { DataTable } from '@/components/ui/data-table'
 
 import { Medication } from '@/types/medication'
 
-import { useCreateOrderViewModel } from '@/effects/orders/useCreateOrder.viewmodel'
-
 import { columns } from './search-medication-columns'
 
 interface AddMedicationDialogProps {
   open?: boolean
   medicationTableData: Medication[]
   defaultSearchValue: string
+  handleOnMedicationDialogConfirm: (medication: Medication) => void
   setSearchValue: (term: string) => void
 }
 
@@ -21,10 +20,9 @@ export function AddMedicationDialog({
   open,
   medicationTableData,
   defaultSearchValue,
-  setSearchValue
+  setSearchValue,
+  handleOnMedicationDialogConfirm
 }: AddMedicationDialogProps): ReactNode {
-  const { handleOnMedicationDialogConfirm } = useCreateOrderViewModel()
-
   return (
     <Dialog open={open}>
       <DialogContent className="bg-white max-w-5xl!">

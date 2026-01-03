@@ -33,11 +33,12 @@ function CreateOrder(): ReactNode {
     onInputSearchConfirm,
     register,
     setSearchValue,
+    handleOnMedicationDialogConfirm,
     searchMedicationDialogIsOpen,
     searchData,
     searchValue,
     orderItens,
-    selectedOrderItem
+    selectedMedication
   } = useCreateOrderViewModel()
 
   return (
@@ -49,7 +50,7 @@ function CreateOrder(): ReactNode {
         <hr className="mt-8 mb-8 text-slate-300" />
         {renderTableContent(orderItens)}
         <hr className="mb-8 mt-8 text-slate-300" />
-        {selectedOrderItem ? <AddOrderItem /> : null}
+        {selectedMedication ? <AddOrderItem /> : null}
         <form onSubmit={onInputSearchConfirm}>
           <Input
             type="search"
@@ -75,6 +76,7 @@ function CreateOrder(): ReactNode {
         medicationTableData={searchData}
         defaultSearchValue={searchValue}
         setSearchValue={setSearchValue}
+        handleOnMedicationDialogConfirm={handleOnMedicationDialogConfirm}
       />
     </div>
   )

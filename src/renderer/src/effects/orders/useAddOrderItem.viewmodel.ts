@@ -1,29 +1,45 @@
-import { SubmitHandler, useForm, UseFormRegister } from 'react-hook-form'
+import { Control, SubmitHandler, useForm, UseFormRegister } from 'react-hook-form'
 
 import { useCreateOrder } from '@/contexts/create-order/create-order.context'
 
+import { BoxType, OrderItem } from '@/types/orderItem'
+
 interface AddOrderItemForm {
   quantitiy: number
+  boxType: BoxType
 }
 
 interface AddOrderItemViewModel {
   register: UseFormRegister<AddOrderItemForm>
   onAddOrderItemSubmit: () => void
+  control: Control<AddOrderItemForm, unknown, AddOrderItemForm>
 }
 
 function useAddOrderItemViewModel(): AddOrderItemViewModel {
-  const { handleSubmit, register } = useForm<AddOrderItemForm>()
+  const { handleSubmit, register, control } = useForm<AddOrderItemForm>()
   const { dispatch, state } = useCreateOrder()
 
   const onAddOrderItemSubmit: SubmitHandler<AddOrderItemForm> = (data) => {
-    if (state.selectedOrderItem) {
-      dispatch({ type: 'addItem', item: state.selectedOrderItem })
+    if (state.selectedMedication) {
+      const { selectedMedication } = state
+
+      const newOrderItem: OrderItem = {
+        medication: selectedMedication,
+        boxType: data.boxType,
+        quantity: data.quantitiy,
+        subtotal: parseInt(selectedMedication.box_price, 10) * data.quantitiy
+      }
+
+      console.log('onAddOrderItem::newOrderItem', newOrderItem)
+
+      dispatch({ type: 'addItem', item: newOrderItem })
     }
   }
 
   return {
     register,
-    onAddOrderItemSubmit: handleSubmit(onAddOrderItemSubmit)
+    onAddOrderItemSubmit: handleSubmit(onAddOrderItemSubmit),
+    control
   }
 }
 
