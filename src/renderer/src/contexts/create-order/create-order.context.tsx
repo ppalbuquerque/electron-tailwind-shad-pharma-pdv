@@ -26,10 +26,20 @@ const initialStateValue: State = {
   selectedMedication: undefined
 }
 
+function addOrderItem(state: State, orderItem: OrderItem): State {
+  const isItemInList = state.items.find((item) => item.medication.id === orderItem.medication.id)
+
+  if (isItemInList) {
+    return state
+  }
+
+  return { ...state, items: [...state.items, orderItem] }
+}
+
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'addItem': {
-      return { ...state, items: [...state.items, action.item] }
+      return addOrderItem(state, action.item)
     }
     case 'selectOrderItem': {
       return { ...state, selectedMedication: action.item }
