@@ -24,6 +24,7 @@ interface CreateOrderViewModel {
   register: UseFormRegister<SearchInputForm>
   setSearchValue: (term: string) => void
   handleOnMedicationDialogConfirm: (medication: Medication) => void
+  handleRemoveOrderItem: (orderItem: OrderItem) => void
   searchMedicationDialogIsOpen: boolean
   searchData: SearchResponse
   searchValue: string
@@ -68,6 +69,10 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     dispatch({ type: 'selectOrderItem', item: medication })
   }
 
+  const handleRemoveOrderItem = (orderItem: OrderItem): void => {
+    dispatch({ type: 'removeItem', item: orderItem })
+  }
+
   return {
     searchMedicationDialogIsOpen,
     searchData: searchData ?? [],
@@ -75,6 +80,7 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     orderItens: state.items,
     selectedMedication: state.selectedMedication,
     orderTotal,
+    handleRemoveOrderItem,
     onInputSearchConfirm: handleSubmit(onInputSearchConfirm),
     register,
     setSearchValue,

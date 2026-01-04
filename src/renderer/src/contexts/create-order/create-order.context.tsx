@@ -6,7 +6,7 @@ import { OrderItem } from '@/types/orderItem'
 
 type Action =
   | { type: 'addItem'; item: OrderItem }
-  | { type: 'removeItem' }
+  | { type: 'removeItem'; item: OrderItem }
   | { type: 'selectOrderItem'; item: Medication }
 type Dispatch = (action: Action) => void
 type State = {
@@ -36,6 +36,14 @@ function addOrderItem(state: State, orderItem: OrderItem): State {
   return { ...state, items: [...state.items, orderItem] }
 }
 
+function removeOrderItem(state: State, orderItem: OrderItem): State {
+  const updatedOrderItem = state.items.filter(
+    (currentOrderItem) => currentOrderItem.medication.id != orderItem.medication.id
+  )
+
+  return { ...state, items: updatedOrderItem }
+}
+
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'addItem': {
@@ -44,8 +52,11 @@ function reducer(state: State, action: Action): State {
     case 'selectOrderItem': {
       return { ...state, selectedMedication: action.item }
     }
+    case 'removeItem': {
+      return removeOrderItem(state, action.item)
+    }
     default: {
-      throw new Error(`Unhandled action type: ${action.type}`)
+      throw new Error(`Unhandled action type: ${action}`)
     }
   }
 }

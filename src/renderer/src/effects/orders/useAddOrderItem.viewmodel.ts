@@ -30,8 +30,6 @@ function useAddOrderItemViewModel(): AddOrderItemViewModel {
         subtotal: parseInt(selectedMedication.box_price, 10) * data.quantitiy
       }
 
-      console.log('onAddOrderItem::newOrderItem', newOrderItem)
-
       dispatch({ type: 'addItem', item: newOrderItem })
     }
   }

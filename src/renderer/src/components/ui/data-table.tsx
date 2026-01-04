@@ -98,6 +98,17 @@ export function DataTable<TData, TValue>({
     }
   })
 
+  useHotkeys('backspace', () => {
+    const rows = table.getRowModel().rows
+
+    const currentIndex = getCurrentIndex(rows, rowSelection)
+    const selectedRow = rows[currentIndex]
+
+    if (onDeleteSelection) {
+      onDeleteSelection(selectedRow.original)
+    }
+  })
+
   return (
     <div className="overflow-hidden rounded-md border">
       <Table className="text-black">

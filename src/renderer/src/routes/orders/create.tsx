@@ -20,12 +20,15 @@ export const Route = createFileRoute('/orders/create')({
   component: CreateOrderHOC
 })
 
-function renderTableContent(orderItens: OrderItem[]): ReactNode {
+function renderTableContent(
+  orderItens: OrderItem[],
+  onDeleteSelection: (orderItem: OrderItem) => void
+): ReactNode {
   if (orderItens.length === 0) {
     return <EmptyOrderItensTable />
   }
 
-  return <DataTable data={orderItens} columns={columns} />
+  return <DataTable data={orderItens} columns={columns} onDeleteSelection={onDeleteSelection} />
 }
 
 function CreateOrder(): ReactNode {
@@ -34,6 +37,7 @@ function CreateOrder(): ReactNode {
     register,
     setSearchValue,
     handleOnMedicationDialogConfirm,
+    handleRemoveOrderItem,
     searchMedicationDialogIsOpen,
     searchData,
     searchValue,
@@ -49,7 +53,7 @@ function CreateOrder(): ReactNode {
           <span className="text-stone-50 font-semibold">Nº 000001</span>
         </div>
         <hr className="mt-8 mb-8 text-slate-300" />
-        {renderTableContent(orderItens)}
+        {renderTableContent(orderItens, handleRemoveOrderItem)}
         <hr className="mb-8 mt-8 text-slate-300" />
         {selectedMedication ? <AddOrderItem /> : null}
         <form onSubmit={onInputSearchConfirm}>
