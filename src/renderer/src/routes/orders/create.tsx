@@ -38,7 +38,8 @@ function CreateOrder(): ReactNode {
     searchData,
     searchValue,
     orderItens,
-    selectedMedication
+    selectedMedication,
+    orderTotal
   } = useCreateOrderViewModel()
 
   return (
@@ -60,7 +61,7 @@ function CreateOrder(): ReactNode {
         </form>
         <div className="flex flex-col items-center pt-2 pb-2 mt-4 bg-emerald-200 rounded-sm">
           <h2 className="font-semibold text-emerald-900 text-lg">Total</h2>
-          <p className="font-bold text-2xl text-emerald-600">R$ 0.00</p>
+          <p className="font-bold text-2xl text-emerald-600">{orderTotal}</p>
         </div>
         <div className="mt-4">
           <Button variant="default" className="flex-1 mr-2 bg-neutral-700">

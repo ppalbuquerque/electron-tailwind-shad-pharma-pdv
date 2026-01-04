@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useForm, SubmitHandler, UseFormRegister } from 'react-hook-form'
 import { useQuery } from '@tanstack/react-query'
@@ -13,6 +13,8 @@ import { OrderItem } from '@/types/orderItem'
 
 import { useCreateOrder } from '@/contexts/create-order/create-order.context'
 
+import { formatMoney } from '@/utils/format-money'
+
 interface SearchInputForm {
   medicationName: string
 }
@@ -26,6 +28,7 @@ interface CreateOrderViewModel {
   searchData: SearchResponse
   searchValue: string
   orderItens: OrderItem[]
+  orderTotal: string
   selectedMedication: Medication | undefined
 }
 
@@ -36,6 +39,14 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
   const { dispatch, state } = useCreateOrder()
 
   const debouncedSearchTerm = useDebounce(searchValue)
+
+  const orderTotal = useMemo(() => {
+    const sumOfOrderItens = state.items.reduce((accumulator, currentItem) => {
+      return accumulator + currentItem.subtotal
+    }, 0)
+
+    return formatMoney(sumOfOrderItens)
+  }, [state.items])
 
   const { data: searchData } = useQuery({
     queryKey: [MEDICATION_QUERY_KEYS.MEDICATION_SEARCH, debouncedSearchTerm],
@@ -63,6 +74,7 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     searchValue: debouncedSearchTerm,
     orderItens: state.items,
     selectedMedication: state.selectedMedication,
+    orderTotal,
     onInputSearchConfirm: handleSubmit(onInputSearchConfirm),
     register,
     setSearchValue,
