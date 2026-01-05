@@ -6,23 +6,23 @@ import { DataTable } from '@/components/ui/data-table'
 
 import { Medication } from '@/types/medication'
 
+import { useSearchMedicationDialogViewModel } from '@/effects/orders/useSearchMedicationDialog.viewmodel'
+
 import { columns } from './search-medication-columns'
 
 interface AddMedicationDialogProps {
   open?: boolean
-  medicationTableData: Medication[]
   defaultSearchValue: string
   handleOnMedicationDialogConfirm: (medication: Medication) => void
-  setSearchValue: (term: string) => void
 }
 
 export function AddMedicationDialog({
   open,
-  medicationTableData,
   defaultSearchValue,
-  setSearchValue,
   handleOnMedicationDialogConfirm
 }: AddMedicationDialogProps): ReactNode {
+  const { register, medicationTableData } = useSearchMedicationDialogViewModel(defaultSearchValue)
+
   return (
     <Dialog open={open}>
       <DialogContent className="bg-white max-w-5xl!">
@@ -41,8 +41,7 @@ export function AddMedicationDialog({
               type="search"
               placeholder="Procure o medicamento pelo nome"
               className="border-slate-300 text-slate-800"
-              defaultValue={defaultSearchValue}
-              onChange={(event) => setSearchValue(event.target.value)}
+              {...register('medicationName')}
             />
           </div>
         </div>

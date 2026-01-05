@@ -8,7 +8,10 @@ type Action =
   | { type: 'addItem'; item: OrderItem }
   | { type: 'removeItem'; item: OrderItem }
   | { type: 'selectOrderItem'; item: Medication }
+  | { type: 'resetSelectOrderItem' }
+
 type Dispatch = (action: Action) => void
+
 type State = {
   items: OrderItem[]
   selectedMedication: Medication | undefined
@@ -54,6 +57,9 @@ function reducer(state: State, action: Action): State {
     }
     case 'removeItem': {
       return removeOrderItem(state, action.item)
+    }
+    case 'resetSelectOrderItem': {
+      return { ...state, selectedMedication: undefined }
     }
     default: {
       throw new Error(`Unhandled action type: ${action}`)

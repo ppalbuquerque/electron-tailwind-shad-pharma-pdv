@@ -35,11 +35,9 @@ function CreateOrder(): ReactNode {
   const {
     onInputSearchConfirm,
     register,
-    setSearchValue,
     handleOnMedicationDialogConfirm,
     handleRemoveOrderItem,
     searchMedicationDialogIsOpen,
-    searchData,
     searchValue,
     orderItens,
     selectedMedication,
@@ -55,14 +53,16 @@ function CreateOrder(): ReactNode {
         <hr className="mt-8 mb-8 text-slate-300" />
         {renderTableContent(orderItens, handleRemoveOrderItem)}
         <hr className="mb-8 mt-8 text-slate-300" />
-        {selectedMedication ? <AddOrderItem /> : null}
         <form onSubmit={onInputSearchConfirm}>
           <Input
             type="search"
-            placeholder="Procure o medicamento pelo nome"
+            placeholder={'Procure o medicamento pelo nome'}
+            disabled={!!selectedMedication}
+            className={selectedMedication ? 'bg-blue-300 mb-2' : ''}
             {...register('medicationName')}
           />
         </form>
+        {selectedMedication ? <AddOrderItem /> : null}
         <div className="flex flex-col items-center pt-2 pb-2 mt-4 bg-emerald-200 rounded-sm">
           <h2 className="font-semibold text-emerald-900 text-lg">Total</h2>
           <p className="font-bold text-2xl text-emerald-600">{orderTotal}</p>
@@ -78,9 +78,7 @@ function CreateOrder(): ReactNode {
       </div>
       <AddMedicationDialog
         open={searchMedicationDialogIsOpen}
-        medicationTableData={searchData}
         defaultSearchValue={searchValue}
-        setSearchValue={setSearchValue}
         handleOnMedicationDialogConfirm={handleOnMedicationDialogConfirm}
       />
     </div>

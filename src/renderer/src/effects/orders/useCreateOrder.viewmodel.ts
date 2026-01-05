@@ -1,12 +1,6 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useForm, SubmitHandler, UseFormRegister } from 'react-hook-form'
-import { useQuery } from '@tanstack/react-query'
-
-import { MEDICATION_QUERY_KEYS } from '@/services/medication/medication.query.keys'
-import { MedicationService, SearchResponse } from '@/services/medication/medication.service'
-
-import { useDebounce } from '@/hooks/use-debounce'
 
 import { Medication } from '@/types/medication'
 import { OrderItem } from '@/types/orderItem'
@@ -22,11 +16,9 @@ interface SearchInputForm {
 interface CreateOrderViewModel {
   onInputSearchConfirm: () => void
   register: UseFormRegister<SearchInputForm>
-  setSearchValue: (term: string) => void
   handleOnMedicationDialogConfirm: (medication: Medication) => void
   handleRemoveOrderItem: (orderItem: OrderItem) => void
   searchMedicationDialogIsOpen: boolean
-  searchData: SearchResponse
   searchValue: string
   orderItens: OrderItem[]
   orderTotal: string
@@ -34,12 +26,14 @@ interface CreateOrderViewModel {
 }
 
 function useCreateOrderViewModel(): CreateOrderViewModel {
-  const { handleSubmit, register } = useForm<SearchInputForm>()
+  const { handleSubmit, register, setFocus, setValue } = useForm<SearchInputForm>()
   const [searchMedicationDialogIsOpen, setSearchMedicationDialogIsOpen] = useState(false)
   const [searchValue, setSearchValue] = useState('')
   const { dispatch, state } = useCreateOrder()
 
-  const debouncedSearchTerm = useDebounce(searchValue)
+  useEffect(() => {
+    setFocus('medicationName')
+  }, [setFocus])
 
   const orderTotal = useMemo(() => {
     const sumOfOrderItens = state.items.reduce((accumulator, currentItem) => {
@@ -48,12 +42,6 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
 
     return formatMoney(sumOfOrderItens)
   }, [state.items])
-
-  const { data: searchData } = useQuery({
-    queryKey: [MEDICATION_QUERY_KEYS.MEDICATION_SEARCH, debouncedSearchTerm],
-    queryFn: () => MedicationService.search({ query: debouncedSearchTerm }),
-    enabled: debouncedSearchTerm.length > 0
-  })
 
   useHotkeys('esc', () => {
     setSearchMedicationDialogIsOpen(false)
@@ -67,6 +55,7 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
   const handleOnMedicationDialogConfirm = (medication: Medication): void => {
     setSearchMedicationDialogIsOpen(false)
     dispatch({ type: 'selectOrderItem', item: medication })
+    setValue('medicationName', medication.name)
   }
 
   const handleRemoveOrderItem = (orderItem: OrderItem): void => {
@@ -75,15 +64,13 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
 
   return {
     searchMedicationDialogIsOpen,
-    searchData: searchData ?? [],
-    searchValue: debouncedSearchTerm,
+    searchValue,
     orderItens: state.items,
     selectedMedication: state.selectedMedication,
     orderTotal,
     handleRemoveOrderItem,
     onInputSearchConfirm: handleSubmit(onInputSearchConfirm),
     register,
-    setSearchValue,
     handleOnMedicationDialogConfirm
   }
 }

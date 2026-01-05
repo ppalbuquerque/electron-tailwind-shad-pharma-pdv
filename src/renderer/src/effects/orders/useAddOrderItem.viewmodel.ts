@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Control, SubmitHandler, useForm, UseFormRegister } from 'react-hook-form'
 
 import { useCreateOrder } from '@/contexts/create-order/create-order.context'
@@ -16,8 +17,12 @@ interface AddOrderItemViewModel {
 }
 
 function useAddOrderItemViewModel(): AddOrderItemViewModel {
-  const { handleSubmit, register, control } = useForm<AddOrderItemForm>()
+  const { handleSubmit, register, control, setFocus } = useForm<AddOrderItemForm>()
   const { dispatch, state } = useCreateOrder()
+
+  // useEffect(() => {
+  //   setFocus('quantitiy')
+  // }, [setFocus])
 
   const onAddOrderItemSubmit: SubmitHandler<AddOrderItemForm> = (data) => {
     if (state.selectedMedication) {
@@ -31,6 +36,7 @@ function useAddOrderItemViewModel(): AddOrderItemViewModel {
       }
 
       dispatch({ type: 'addItem', item: newOrderItem })
+      dispatch({ type: 'resetSelectOrderItem' })
     }
   }
 
