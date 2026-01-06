@@ -13,6 +13,7 @@ interface SearchMedicationForm {
 
 interface SearchMedicationDialogViewModel {
   register: UseFormRegister<SearchMedicationForm>
+  isLoadingMedications: boolean
   medicationTableData: SearchResponse
 }
 
@@ -24,7 +25,7 @@ function useSearchMedicationDialogViewModel(
 
   const debouncedSearchTerm = useDebounce(watchSearchTerm)
 
-  const { data: searchData } = useQuery({
+  const { data: searchData, isLoading } = useQuery({
     queryKey: [MEDICATION_QUERY_KEYS.MEDICATION_SEARCH, debouncedSearchTerm],
     queryFn: () => MedicationService.search({ query: debouncedSearchTerm }),
     enabled: debouncedSearchTerm.length > 0
@@ -36,7 +37,8 @@ function useSearchMedicationDialogViewModel(
 
   return {
     register,
-    medicationTableData: searchData ?? []
+    medicationTableData: searchData ?? [],
+    isLoadingMedications: isLoading
   }
 }
 

@@ -19,11 +19,14 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import { Spinner } from '@/components/ui/spinner'
+
 import { cn } from '@/lib/utils'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  isLoading?: boolean
   onConfirmSelection?: (row: TData) => void
   onDeleteSelection?: (row: TData) => void
 }
@@ -47,6 +50,7 @@ function getCurrentIndex(rows: RowModel<unknown>[], rowSelection: RowSelectionSt
 export function DataTable<TData, TValue>({
   columns,
   data,
+  isLoading,
   onConfirmSelection,
   onDeleteSelection
 }: DataTableProps<TData, TValue>): ReactNode {
@@ -144,6 +148,12 @@ export function DataTable<TData, TValue>({
           ))}
         </TableBody>
       </Table>
+      {isLoading && (
+        <div className="text-black flex justify-center mt-4 items-center flex-col">
+          <Spinner className="size-8 mb-2" />
+          <span>Carregando medicamentos...</span>
+        </div>
+      )}
     </div>
   )
 }

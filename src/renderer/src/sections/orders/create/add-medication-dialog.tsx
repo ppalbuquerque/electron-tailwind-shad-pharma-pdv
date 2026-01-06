@@ -21,7 +21,8 @@ export function AddMedicationDialog({
   defaultSearchValue,
   handleOnMedicationDialogConfirm
 }: AddMedicationDialogProps): ReactNode {
-  const { register, medicationTableData } = useSearchMedicationDialogViewModel(defaultSearchValue)
+  const { register, medicationTableData, isLoadingMedications } =
+    useSearchMedicationDialogViewModel(defaultSearchValue)
 
   return (
     <Dialog open={open}>
@@ -32,6 +33,7 @@ export function AddMedicationDialog({
         <div>
           <DataTable
             data={medicationTableData}
+            isLoading={isLoadingMedications}
             columns={columns}
             onConfirmSelection={handleOnMedicationDialogConfirm}
           />
