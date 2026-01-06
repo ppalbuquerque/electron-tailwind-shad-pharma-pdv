@@ -10,6 +10,7 @@ import {
 import { ReactNode } from 'react'
 import { cva } from 'class-variance-authority'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { CircleOff } from 'lucide-react'
 
 import {
   Table,
@@ -66,6 +67,8 @@ export function DataTable<TData, TValue>({
       rowSelection
     }
   })
+
+  const isTableEmpty = !isLoading && data.length === 0
 
   useHotkeys('ArrowDown', () => {
     const rows = table.getRowModel().rows
@@ -152,6 +155,12 @@ export function DataTable<TData, TValue>({
         <div className="text-black flex justify-center mt-4 items-center flex-col">
           <Spinner className="size-8 mb-2" />
           <span>Carregando medicamentos...</span>
+        </div>
+      )}
+      {isTableEmpty && (
+        <div className="text-black flex justify-center mt-4 items-center flex-col">
+          <CircleOff className="mb-4 mt-4" />
+          <span>Nenhum medicamento encontrado</span>
         </div>
       )}
     </div>
