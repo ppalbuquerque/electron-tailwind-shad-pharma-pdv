@@ -37,6 +37,7 @@ function CreateOrder(): ReactNode {
     register,
     handleOnMedicationDialogConfirm,
     handleRemoveOrderItem,
+    handleCreateOrder,
     searchMedicationDialogIsOpen,
     searchValue,
     orderItens,
@@ -68,7 +69,11 @@ function CreateOrder(): ReactNode {
           <p className="font-bold text-2xl text-emerald-600">{orderTotal}</p>
         </div>
         <div className="mt-4">
-          <Button variant="default" className="flex-1 mr-2 bg-neutral-700">
+          <Button
+            variant="default"
+            className="flex-1 mr-2 bg-neutral-700"
+            onClick={handleCreateOrder}
+          >
             Fechar Venda (ESC)
           </Button>
           <Button className="flex-1" variant="destructive">

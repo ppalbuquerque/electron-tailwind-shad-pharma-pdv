@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useForm, SubmitHandler, UseFormRegister } from 'react-hook-form'
+import { useMutation } from '@tanstack/react-query'
 
 import { Medication } from '@/types/medication'
 import { OrderItem } from '@/types/orderItem'
@@ -8,6 +9,9 @@ import { OrderItem } from '@/types/orderItem'
 import { useCreateOrder } from '@/contexts/create-order/create-order.context'
 
 import { formatMoney } from '@/utils/format-money'
+
+import { OrdersService } from '@/services/orders/orders.service'
+import { CreateOrderDTO } from '@/services/orders/orders.dto'
 
 interface SearchInputForm {
   medicationName: string
@@ -18,6 +22,7 @@ interface CreateOrderViewModel {
   register: UseFormRegister<SearchInputForm>
   handleOnMedicationDialogConfirm: (medication: Medication) => void
   handleRemoveOrderItem: (orderItem: OrderItem) => void
+  handleCreateOrder: () => void
   searchMedicationDialogIsOpen: boolean
   searchValue: string
   orderItens: OrderItem[]
@@ -43,6 +48,12 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     return formatMoney(sumOfOrderItens)
   }, [state.items])
 
+  const createOrderMutation = useMutation({
+    mutationFn: (payload: CreateOrderDTO) => OrdersService.createOrder(payload),
+    onSuccess: (data, variables, onMutateResult) => {},
+    onError(error, variables, onMutateResult) {}
+  })
+
   useHotkeys('esc', () => {
     setSearchMedicationDialogIsOpen(false)
   })
@@ -62,6 +73,22 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     dispatch({ type: 'removeItem', item: orderItem })
   }
 
+  const handleCreateOrder = (): void => {
+    const { items } = state
+
+    const formattedOrderItems = items.map((orderItem) => ({
+      amount: orderItem.quantity,
+      medicationId: String(orderItem.medication.id),
+      totalValue: orderItem.subtotal,
+      boxType: orderItem.boxType
+    }))
+
+    createOrderMutation.mutate({
+      paymentValue: 300,
+      orderItems: formattedOrderItems
+    })
+  }
+
   return {
     searchMedicationDialogIsOpen,
     searchValue,
@@ -71,7 +98,8 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     handleRemoveOrderItem,
     onInputSearchConfirm: handleSubmit(onInputSearchConfirm),
     register,
-    handleOnMedicationDialogConfirm
+    handleOnMedicationDialogConfirm,
+    handleCreateOrder
   }
 }
 
