@@ -17,7 +17,12 @@ function AddOrderItem(): ReactNode {
   return (
     <div>
       <form onSubmit={onAddOrderItemSubmit} className="mb-4 flex items-center">
-        <Input type="number" placeholder="Quantidade" className="mr-4" {...register('quantitiy')} />
+        <Input
+          type="number"
+          placeholder="Quantidade"
+          className="mr-4"
+          {...register('quantity', { valueAsNumber: true })}
+        />
         <Controller
           name="boxType"
           control={control}

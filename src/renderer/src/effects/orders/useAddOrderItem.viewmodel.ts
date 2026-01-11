@@ -1,14 +1,18 @@
 import { useEffect } from 'react'
 import { Control, SubmitHandler, useForm, UseFormRegister } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
 
 import { useCreateOrder } from '@/contexts/create-order/create-order.context'
 
-import { BoxType, OrderItem } from '@/types/orderItem'
+import { OrderItem } from '@/types/orderItem'
 
-interface AddOrderItemForm {
-  quantitiy: number
-  boxType: BoxType
-}
+const formSchema = z.object({
+  quantity: z.number().min(1, 'Quantidade miníma de produtos é 1'),
+  boxType: z.enum(['box', 'unit'])
+})
+
+type AddOrderItemForm = z.infer<typeof formSchema>
 
 interface AddOrderItemViewModel {
   register: UseFormRegister<AddOrderItemForm>
@@ -17,12 +21,16 @@ interface AddOrderItemViewModel {
 }
 
 function useAddOrderItemViewModel(): AddOrderItemViewModel {
-  const { handleSubmit, register, control, setFocus } = useForm<AddOrderItemForm>()
+  const { handleSubmit, register, control, setFocus, formState } = useForm<AddOrderItemForm>({
+    resolver: zodResolver(formSchema)
+  })
   const { dispatch, state } = useCreateOrder()
 
-  // useEffect(() => {
-  //   setFocus('quantitiy')
-  // }, [setFocus])
+  useEffect(() => {
+    setFocus('quantity')
+  }, [setFocus])
+
+  console.log(formState.errors)
 
   const onAddOrderItemSubmit: SubmitHandler<AddOrderItemForm> = (data) => {
     if (state.selectedMedication) {
@@ -31,8 +39,8 @@ function useAddOrderItemViewModel(): AddOrderItemViewModel {
       const newOrderItem: OrderItem = {
         medication: selectedMedication,
         boxType: data.boxType,
-        quantity: data.quantitiy,
-        subtotal: parseInt(selectedMedication.box_price, 10) * data.quantitiy
+        quantity: data.quantity,
+        subtotal: parseInt(selectedMedication.box_price, 10) * data.quantity
       }
 
       dispatch({ type: 'addItem', item: newOrderItem })

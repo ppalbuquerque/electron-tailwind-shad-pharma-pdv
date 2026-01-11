@@ -70,40 +70,52 @@ export function DataTable<TData, TValue>({
 
   const isTableEmpty = !isLoading && data.length === 0
 
-  useHotkeys('ArrowDown', () => {
-    const rows = table.getRowModel().rows
+  useHotkeys(
+    'ArrowDown',
+    () => {
+      const rows = table.getRowModel().rows
 
-    const currentIndex = getCurrentIndex(rows, rowSelection)
+      const currentIndex = getCurrentIndex(rows, rowSelection)
 
-    const nextIndex = currentIndex + 1
+      const nextIndex = currentIndex + 1
 
-    if (nextIndex < rows.length) {
-      setRowSelection({ [rows[nextIndex].id]: true })
-    }
-  })
+      if (nextIndex < rows.length) {
+        setRowSelection({ [rows[nextIndex].id]: true })
+      }
+    },
+    { enableOnFormTags: true }
+  )
 
-  useHotkeys('ArrowUp', () => {
-    const rows = table.getRowModel().rows
+  useHotkeys(
+    'ArrowUp',
+    () => {
+      const rows = table.getRowModel().rows
 
-    const currentIndex = getCurrentIndex(rows, rowSelection)
+      const currentIndex = getCurrentIndex(rows, rowSelection)
 
-    const nextIndex = currentIndex - 1
+      const nextIndex = currentIndex - 1
 
-    if (nextIndex >= 0) {
-      setRowSelection({ [rows[nextIndex].id]: true })
-    }
-  })
+      if (nextIndex >= 0) {
+        setRowSelection({ [rows[nextIndex].id]: true })
+      }
+    },
+    { enableOnFormTags: true }
+  )
 
-  useHotkeys('Enter', () => {
-    const rows = table.getRowModel().rows
+  useHotkeys(
+    'Enter',
+    () => {
+      const rows = table.getRowModel().rows
 
-    const currentIndex = getCurrentIndex(rows, rowSelection)
-    const selectedRow = rows[currentIndex]
+      const currentIndex = getCurrentIndex(rows, rowSelection)
+      const selectedRow = rows[currentIndex]
 
-    if (onConfirmSelection) {
-      onConfirmSelection(selectedRow.original)
-    }
-  })
+      if (onConfirmSelection) {
+        onConfirmSelection(selectedRow.original)
+      }
+    },
+    { enableOnFormTags: true }
+  )
 
   useHotkeys('backspace', () => {
     const rows = table.getRowModel().rows
