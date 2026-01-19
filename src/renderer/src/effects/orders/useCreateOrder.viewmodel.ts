@@ -39,8 +39,10 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
   const { dispatch, state } = useCreateOrder()
 
   useEffect(() => {
-    setFocus('medicationName')
-  }, [setFocus])
+    if (state.selectedMedication === undefined) {
+      setFocus('medicationName')
+    }
+  }, [setFocus, state.selectedMedication])
 
   const orderTotal = useMemo(() => {
     const sumOfOrderItens = state.items.reduce((accumulator, currentItem) => {
