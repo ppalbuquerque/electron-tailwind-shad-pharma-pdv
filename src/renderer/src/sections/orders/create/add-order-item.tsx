@@ -34,12 +34,8 @@ function AddOrderItem(): ReactNode {
                 <SelectValue placeholder="Tipo" />
               </SelectTrigger>
               <SelectContent className="bg-white text-black">
-                <SelectItem value="box" className="focus:border-blue-400">
-                  Caixa
-                </SelectItem>
-                <SelectItem value="unit" className="focus:border-blue-400">
-                  Unidade
-                </SelectItem>
+                <SelectItem value="box">Caixa</SelectItem>
+                <SelectItem value="unit">Unidade</SelectItem>
               </SelectContent>
             </Select>
           )}
