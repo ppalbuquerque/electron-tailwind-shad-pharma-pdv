@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, KeyboardEvent } from 'react'
 import { Control, SubmitHandler, useForm, UseFormRegister } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -17,11 +17,12 @@ type AddOrderItemForm = z.infer<typeof formSchema>
 interface AddOrderItemViewModel {
   register: UseFormRegister<AddOrderItemForm>
   onAddOrderItemSubmit: () => void
+  handleQuantityInputKeydown: (event: KeyboardEvent<HTMLInputElement>) => void
   control: Control<AddOrderItemForm, unknown, AddOrderItemForm>
 }
 
 function useAddOrderItemViewModel(): AddOrderItemViewModel {
-  const { handleSubmit, register, control, setFocus, formState } = useForm<AddOrderItemForm>({
+  const { handleSubmit, register, control, setFocus } = useForm<AddOrderItemForm>({
     resolver: zodResolver(formSchema)
   })
   const { dispatch, state } = useCreateOrder()
@@ -30,7 +31,11 @@ function useAddOrderItemViewModel(): AddOrderItemViewModel {
     setFocus('quantity')
   }, [setFocus])
 
-  console.log(formState.errors)
+  const handleQuantityInputKeydown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      setFocus('boxType', { shouldSelect: true })
+    }
+  }
 
   const onAddOrderItemSubmit: SubmitHandler<AddOrderItemForm> = (data) => {
     if (state.selectedMedication) {
@@ -51,6 +56,7 @@ function useAddOrderItemViewModel(): AddOrderItemViewModel {
   return {
     register,
     onAddOrderItemSubmit: handleSubmit(onAddOrderItemSubmit),
+    handleQuantityInputKeydown,
     control
   }
 }

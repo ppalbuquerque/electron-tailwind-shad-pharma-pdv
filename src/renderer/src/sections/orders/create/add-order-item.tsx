@@ -12,7 +12,8 @@ import {
 import { useAddOrderItemViewModel } from '@/effects/orders/useAddOrderItem.viewmodel'
 
 function AddOrderItem(): ReactNode {
-  const { register, onAddOrderItemSubmit, control } = useAddOrderItemViewModel()
+  const { register, onAddOrderItemSubmit, handleQuantityInputKeydown, control } =
+    useAddOrderItemViewModel()
 
   return (
     <div>
@@ -21,6 +22,7 @@ function AddOrderItem(): ReactNode {
           type="number"
           placeholder="Quantidade"
           className="mr-4"
+          onKeyDown={handleQuantityInputKeydown}
           {...register('quantity', { valueAsNumber: true })}
         />
         <Controller
@@ -28,7 +30,7 @@ function AddOrderItem(): ReactNode {
           control={control}
           render={({ field }) => (
             <Select onValueChange={(value) => field.onChange(value)}>
-              <SelectTrigger>
+              <SelectTrigger ref={field.ref}>
                 <SelectValue placeholder="Tipo" />
               </SelectTrigger>
               <SelectContent className="bg-white text-black">
