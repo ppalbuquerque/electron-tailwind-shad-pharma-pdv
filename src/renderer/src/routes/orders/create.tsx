@@ -4,6 +4,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { DataTable } from '@/components/ui/data-table'
+import { Spinner } from '@/components/ui/spinner'
 
 import { AddMedicationDialog } from '@/sections/orders/create/add-medication-dialog'
 import { EmptyOrderItensTable } from '@/sections/orders/create/empty-order-itens-table'
@@ -38,6 +39,7 @@ function CreateOrder(): ReactNode {
     handleOnMedicationDialogConfirm,
     handleRemoveOrderItem,
     handleCreateOrder,
+    isCreateOrderMutationLoading,
     searchMedicationDialogIsOpen,
     searchValue,
     orderItens,
@@ -73,7 +75,9 @@ function CreateOrder(): ReactNode {
             variant="default"
             className="flex-1 mr-2 bg-neutral-700"
             onClick={handleCreateOrder}
+            disabled={isCreateOrderMutationLoading}
           >
+            {isCreateOrderMutationLoading && <Spinner />}
             Fechar Venda (ESC)
           </Button>
           <Button className="flex-1" variant="destructive">

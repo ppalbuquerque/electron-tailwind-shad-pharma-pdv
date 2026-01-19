@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useForm, SubmitHandler, UseFormRegister } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
 import { Medication } from '@/types/medication'
 import { OrderItem } from '@/types/orderItem'
@@ -23,6 +24,7 @@ interface CreateOrderViewModel {
   handleOnMedicationDialogConfirm: (medication: Medication) => void
   handleRemoveOrderItem: (orderItem: OrderItem) => void
   handleCreateOrder: () => void
+  isCreateOrderMutationLoading: boolean
   searchMedicationDialogIsOpen: boolean
   searchValue: string
   orderItens: OrderItem[]
@@ -31,7 +33,7 @@ interface CreateOrderViewModel {
 }
 
 function useCreateOrderViewModel(): CreateOrderViewModel {
-  const { handleSubmit, register, setFocus, setValue } = useForm<SearchInputForm>()
+  const { handleSubmit, register, setFocus, setValue, reset } = useForm<SearchInputForm>()
   const [searchMedicationDialogIsOpen, setSearchMedicationDialogIsOpen] = useState(false)
   const [searchValue, setSearchValue] = useState('')
   const { dispatch, state } = useCreateOrder()
@@ -48,10 +50,17 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     return formatMoney(sumOfOrderItens)
   }, [state.items])
 
-  const createOrderMutation = useMutation({
+  const { mutate: createOrderMutate, isPending } = useMutation({
     mutationFn: (payload: CreateOrderDTO) => OrdersService.createOrder(payload),
-    onSuccess: (data, variables, onMutateResult) => {},
-    onError(error, variables, onMutateResult) {}
+    onSuccess: (data, variables, onMutateResult) => {
+      toast.success('Venda realizada com sucesso')
+      dispatch({ type: 'resetOrderContext' })
+      setFocus('medicationName')
+      reset()
+    },
+    onError(error, variables, onMutateResult) {
+      toast.error('Ocorreu um erro ao registrar a venda')
+    }
   })
 
   useHotkeys('esc', () => {
@@ -83,7 +92,7 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
       boxType: orderItem.boxType
     }))
 
-    createOrderMutation.mutate({
+    createOrderMutate({
       paymentValue: 300,
       orderItems: formattedOrderItems
     })
@@ -95,6 +104,7 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     orderItens: state.items,
     selectedMedication: state.selectedMedication,
     orderTotal,
+    isCreateOrderMutationLoading: isPending,
     handleRemoveOrderItem,
     onInputSearchConfirm: handleSubmit(onInputSearchConfirm),
     register,
