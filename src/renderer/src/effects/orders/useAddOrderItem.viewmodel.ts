@@ -18,11 +18,12 @@ interface AddOrderItemViewModel {
   register: UseFormRegister<AddOrderItemForm>
   onAddOrderItemSubmit: () => void
   handleQuantityInputKeydown: (event: KeyboardEvent<HTMLInputElement>) => void
+  handleBoxTypeInputKeydown: (event: KeyboardEvent<HTMLButtonElement>) => void
   control: Control<AddOrderItemForm, unknown, AddOrderItemForm>
 }
 
 function useAddOrderItemViewModel(): AddOrderItemViewModel {
-  const { handleSubmit, register, control, setFocus } = useForm<AddOrderItemForm>({
+  const { handleSubmit, register, control, setFocus, getValues } = useForm<AddOrderItemForm>({
     resolver: zodResolver(formSchema)
   })
   const { dispatch, state } = useCreateOrder()
@@ -35,6 +36,21 @@ function useAddOrderItemViewModel(): AddOrderItemViewModel {
     if (event.key === 'Enter') {
       setFocus('boxType', { shouldSelect: true })
     }
+  }
+
+  const handleBoxTypeInputKeydown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key !== 'Enter') {
+      return
+    }
+
+    event.preventDefault()
+
+    const boxType = getValues('boxType')
+    if (!boxType) {
+      return
+    }
+
+    handleSubmit(onAddOrderItemSubmit)()
   }
 
   const onAddOrderItemSubmit: SubmitHandler<AddOrderItemForm> = (data) => {
@@ -57,6 +73,7 @@ function useAddOrderItemViewModel(): AddOrderItemViewModel {
     register,
     onAddOrderItemSubmit: handleSubmit(onAddOrderItemSubmit),
     handleQuantityInputKeydown,
+    handleBoxTypeInputKeydown,
     control
   }
 }
