@@ -65,10 +65,6 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     }
   })
 
-  useHotkeys('esc', () => {
-    setSearchMedicationDialogIsOpen(false)
-  })
-
   const onInputSearchConfirm: SubmitHandler<SearchInputForm> = (data) => {
     setSearchMedicationDialogIsOpen(true)
     setSearchValue(data.medicationName)
@@ -99,6 +95,22 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
       orderItems: formattedOrderItems
     })
   }
+
+  useHotkeys(
+    'esc',
+    () => {
+      if (searchMedicationDialogIsOpen) {
+        setSearchMedicationDialogIsOpen(false)
+        setTimeout(() => setFocus('medicationName'), 0)
+        return
+      }
+
+      if (state.items.length > 0) {
+        handleCreateOrder()
+      }
+    },
+    { enableOnFormTags: true },
+  )
 
   return {
     searchMedicationDialogIsOpen,
