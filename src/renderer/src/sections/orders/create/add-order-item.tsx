@@ -18,8 +18,7 @@ function AddOrderItem(): ReactNode {
     handleQuantityInputKeydown,
     handleBoxTypeInputKeydown,
     control
-  } =
-    useAddOrderItemViewModel()
+  } = useAddOrderItemViewModel()
 
   return (
     <div>
