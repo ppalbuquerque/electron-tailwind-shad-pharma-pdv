@@ -9,8 +9,6 @@ import { OrderItem } from '@/types/orderItem'
 
 import { useCreateOrder } from '@/contexts/create-order/create-order.context'
 
-import { formatMoney } from '@/utils/format-money'
-
 import { OrdersService } from '@/services/orders/orders.service'
 import { CreateOrderDTO } from '@/services/orders/orders.dto'
 
@@ -23,12 +21,15 @@ interface CreateOrderViewModel {
   register: UseFormRegister<SearchInputForm>
   handleOnMedicationDialogConfirm: (medication: Medication) => void
   handleRemoveOrderItem: (orderItem: OrderItem) => void
-  handleCreateOrder: () => void
+  handleCreateOrder: (paymentValue: number) => void
+  handleOpenCloseOrder: () => void
+  handleCancelCloseOrder: () => void
   isCreateOrderMutationLoading: boolean
+  isClosingOrder: boolean
   searchMedicationDialogIsOpen: boolean
   searchValue: string
   orderItens: OrderItem[]
-  orderTotal: string
+  orderTotalRaw: number
   selectedMedication: Medication | undefined
 }
 
@@ -36,6 +37,7 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
   const { handleSubmit, register, setFocus, setValue, reset } = useForm<SearchInputForm>()
   const [searchMedicationDialogIsOpen, setSearchMedicationDialogIsOpen] = useState(false)
   const [searchValue, setSearchValue] = useState('')
+  const [isClosingOrder, setIsClosingOrder] = useState(false)
   const { dispatch, state } = useCreateOrder()
 
   useEffect(() => {
@@ -44,12 +46,10 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     }
   }, [setFocus, state.selectedMedication])
 
-  const orderTotal = useMemo(() => {
-    const sumOfOrderItens = state.items.reduce((accumulator, currentItem) => {
+  const orderTotalRaw = useMemo(() => {
+    return state.items.reduce((accumulator, currentItem) => {
       return accumulator + currentItem.subtotal
     }, 0)
-
-    return formatMoney(sumOfOrderItens)
   }, [state.items])
 
   const { mutate: createOrderMutate, isPending } = useMutation({
@@ -57,6 +57,7 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     onSuccess: (data, variables, onMutateResult) => {
       toast.success('Venda realizada com sucesso')
       dispatch({ type: 'resetOrderContext' })
+      setIsClosingOrder(false)
       setFocus('medicationName')
       reset()
     },
@@ -80,7 +81,7 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     dispatch({ type: 'removeItem', item: orderItem })
   }
 
-  const handleCreateOrder = (): void => {
+  const handleCreateOrder = (paymentValue: number): void => {
     const { items } = state
 
     const formattedOrderItems = items.map((orderItem) => ({
@@ -90,10 +91,16 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
       boxType: orderItem.boxType
     }))
 
-    createOrderMutate({
-      paymentValue: 300,
-      orderItems: formattedOrderItems
-    })
+    createOrderMutate({ paymentValue, orderItems: formattedOrderItems })
+  }
+
+  const handleOpenCloseOrder = (): void => {
+    if (state.items.length === 0) return
+    setIsClosingOrder(true)
+  }
+
+  const handleCancelCloseOrder = (): void => {
+    setIsClosingOrder(false)
   }
 
   useHotkeys(
@@ -105,9 +112,11 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
         return
       }
 
-      if (state.items.length > 0) {
-        handleCreateOrder()
+      if (isClosingOrder) {
+        return
       }
+
+      handleOpenCloseOrder()
     },
     { enableOnFormTags: true },
   )
@@ -117,13 +126,16 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     searchValue,
     orderItens: state.items,
     selectedMedication: state.selectedMedication,
-    orderTotal,
+    orderTotalRaw,
     isCreateOrderMutationLoading: isPending,
+    isClosingOrder,
     handleRemoveOrderItem,
     onInputSearchConfirm: handleSubmit(onInputSearchConfirm),
     register,
     handleOnMedicationDialogConfirm,
-    handleCreateOrder
+    handleCreateOrder,
+    handleOpenCloseOrder,
+    handleCancelCloseOrder
   }
 }
 
