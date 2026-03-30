@@ -80,6 +80,32 @@ The app is keyboard-driven (POS context):
 - **Enter**: Submit forms / advance focus between inputs
 - **Esc**: Close dialogs
 
+### Form Inputs
+
+All form inputs **must** be controlled via `react-hook-form`. Never use `useState` to manage input values directly.
+
+- Simple text/number inputs: use `register` from `useForm`
+- Third-party input components (e.g. `MoneyInput`, `Select`): wrap in `Controller` and bind via `field.onChange` / `field.ref`
+- The viewmodel exposes `register` and `control` to the component — the component never owns input state
+
+```tsx
+// ✅ Correct — Controller for third-party component
+<Controller
+  name="paymentValue"
+  control={control}
+  render={({ field }) => (
+    <MoneyInput
+      ref={field.ref}
+      onValueChange={(_, __, values) => field.onChange(values?.float ?? 0)}
+    />
+  )}
+/>
+
+// ❌ Wrong — input state owned by useState
+const [paymentValue, setPaymentValue] = useState(0)
+<MoneyInput onValueChange={(_, __, values) => setPaymentValue(values?.float ?? 0)} />
+```
+
 ### Code Style
 
 Prettier config: single quotes, no semicolons, 100-char line width, 2-space indent (enforced via `.prettierrc.yaml` + `.editorconfig`).
