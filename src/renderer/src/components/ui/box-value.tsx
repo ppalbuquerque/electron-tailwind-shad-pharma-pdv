@@ -3,14 +3,15 @@ import { ReactNode } from 'react'
 interface BoxValueProps {
   title: string
   value: string
+  className?: string
 }
 
-function BoxValue({ title, value }: BoxValueProps): ReactNode {
+function BoxValue({ title, value, className }: BoxValueProps): ReactNode {
   return (
-    <div>
+    <div className={className}>
       <h5>{title}</h5>
       <p>
-        <strong>R$ 20,00</strong>
+        <strong>{value}</strong>
       </p>
     </div>
   )
