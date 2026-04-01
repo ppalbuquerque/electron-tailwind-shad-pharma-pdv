@@ -53,7 +53,7 @@ const routes = [
   {
     title: 'Lista de Vendas',
     icon: List,
-    url: '/sale/list',
+    url: '/orders/list',
     hotkey: 'F5'
   },
   {
