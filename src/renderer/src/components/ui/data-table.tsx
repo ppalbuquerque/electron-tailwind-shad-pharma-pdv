@@ -28,6 +28,8 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   isLoading?: boolean
+  loadingMessage?: string
+  emptyMessage?: string
   onConfirmSelection?: (row: TData) => void
   onDeleteSelection?: (row: TData) => void
 }
@@ -52,6 +54,8 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   isLoading,
+  loadingMessage = 'Carregando...',
+  emptyMessage = 'Nenhum resultado encontrado',
   onConfirmSelection,
   onDeleteSelection
 }: DataTableProps<TData, TValue>): ReactNode {
@@ -166,13 +170,13 @@ export function DataTable<TData, TValue>({
       {isLoading && (
         <div className="text-black flex justify-center mt-4 items-center flex-col">
           <Spinner className="size-8 mb-2" />
-          <span>Carregando medicamentos...</span>
+          <span>{loadingMessage}</span>
         </div>
       )}
       {isTableEmpty && (
         <div className="text-black flex justify-center mt-4 items-center flex-col">
           <CircleOff className="mb-4 mt-4" />
-          <span>Nenhum medicamento encontrado</span>
+          <span>{emptyMessage}</span>
         </div>
       )}
     </div>
