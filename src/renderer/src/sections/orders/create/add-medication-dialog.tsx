@@ -35,6 +35,8 @@ export function AddMedicationDialog({
             data={medicationTableData}
             isLoading={isLoadingMedications}
             columns={columns}
+            loadingMessage="Carregando medicamentos..."
+            emptyMessage="Nenhum medicamento encontrado"
             onConfirmSelection={handleOnMedicationDialogConfirm}
           />
           <hr className="mb-8 mt-8 text-slate-300" />
