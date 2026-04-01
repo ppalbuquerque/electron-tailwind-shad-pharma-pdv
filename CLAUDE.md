@@ -61,6 +61,8 @@ The app expects a backend at `http://localhost:3000`:
 - `POST /orders` — create order (`CreateOrderDTO`)
 - `POST /checkout` — checkout operations
 
+**Regra:** sempre que for necessário implementar uma integração com a API (novos endpoints, parâmetros, schemas de request/response), consulte `docs/api-reference.md` como fonte de verdade antes de escrever qualquer código. Não assuma contratos — verifique o documento.
+
 ### Core Domain Types
 
 ```typescript
@@ -109,3 +111,35 @@ const [paymentValue, setPaymentValue] = useState(0)
 ### Code Style
 
 Prettier config: single quotes, no semicolons, 100-char line width, 2-space indent (enforced via `.prettierrc.yaml` + `.editorconfig`).
+
+### Feature Sliced Architecture
+
+O projeto adota Feature Sliced Architecture. Cada domínio (ex: `orders`, `checkout`, `medication`) possui seu próprio módulo e todos os artefatos relacionados a ele devem viver dentro desse módulo:
+
+- Componentes de UI → `src/renderer/src/components/<módulo>/`
+- ViewModels / hooks de negócio → `src/renderer/src/effects/<módulo>/`
+- Services e DTOs → `src/renderer/src/services/<módulo>/`
+- Contextos → `src/renderer/src/contexts/<módulo>/`
+
+ViewModels devem seguir o padrão `effects/[Module]/use<Feature>.viewmodel.ts` — nunca na raiz de `effects/` nem em pastas de outros módulos. Componentes genéricos e reutilizáveis sem domínio fixo ficam em `components/ui/`.
+
+### Design Guide
+
+**Hover em botões:** todo botão deve ter uma ação de hover visível. Use sempre um tom mais escuro da cor de fundo do botão — nunca dependa de variáveis CSS genéricas como `hover:bg-primary/90` se a cor base for utilitária (ex: `bg-green-600` → `hover:bg-green-700`). Botões com `variant="outline"` já herdam `hover:bg-accent` do componente base.
+
+**Box de conteúdo:** todo conteúdo principal dentro de uma rota deve ser envolto em uma box de fundo branco para dar destaque contra o fundo padrão da aplicação. Use sempre o padrão:
+
+```tsx
+<div className="p-6">
+  <div className="bg-white rounded-sm p-12 border-slate-300 border text-black">
+    {/* conteúdo */}
+  </div>
+</div>
+```
+
+### Planejamento
+
+Sempre que criar um plano de implementação, quebre-o em tasks isoladas usando o `TaskCreate`. Cada task deve:
+- Ter escopo único e bem definido (uma responsabilidade por task)
+- Ser executável de forma independente
+- Ser marcada como concluída imediatamente após sua execução
