@@ -12,6 +12,8 @@ function getPageTitleByPath(path: RoutesPath): string {
       return 'Abrir Caixa'
     case '/orders/list':
       return 'Lista de Pedidos'
+    case '/orders/detail':
+      return 'Detalhe do Pedido'
     default:
       return 'Home'
   }
