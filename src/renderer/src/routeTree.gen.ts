@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OrdersListRouteImport } from './routes/orders/list'
+import { Route as OrdersDetailRouteImport } from './routes/orders/detail'
 import { Route as OrdersCreateRouteImport } from './routes/orders/create'
 import { Route as CheckoutOpenRouteImport } from './routes/checkout/open'
 import { Route as CheckoutCloseRouteImport } from './routes/checkout/close'
@@ -23,6 +24,11 @@ const IndexRoute = IndexRouteImport.update({
 const OrdersListRoute = OrdersListRouteImport.update({
   id: '/orders/list',
   path: '/orders/list',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersDetailRoute = OrdersDetailRouteImport.update({
+  id: '/orders/detail',
+  path: '/orders/detail',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrdersCreateRoute = OrdersCreateRouteImport.update({
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/checkout/close': typeof CheckoutCloseRoute
   '/checkout/open': typeof CheckoutOpenRoute
   '/orders/create': typeof OrdersCreateRoute
+  '/orders/detail': typeof OrdersDetailRoute
   '/orders/list': typeof OrdersListRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/checkout/close': typeof CheckoutCloseRoute
   '/checkout/open': typeof CheckoutOpenRoute
   '/orders/create': typeof OrdersCreateRoute
+  '/orders/detail': typeof OrdersDetailRoute
   '/orders/list': typeof OrdersListRoute
 }
 export interface FileRoutesById {
@@ -61,6 +69,7 @@ export interface FileRoutesById {
   '/checkout/close': typeof CheckoutCloseRoute
   '/checkout/open': typeof CheckoutOpenRoute
   '/orders/create': typeof OrdersCreateRoute
+  '/orders/detail': typeof OrdersDetailRoute
   '/orders/list': typeof OrdersListRoute
 }
 export interface FileRouteTypes {
@@ -70,6 +79,7 @@ export interface FileRouteTypes {
     | '/checkout/close'
     | '/checkout/open'
     | '/orders/create'
+    | '/orders/detail'
     | '/orders/list'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -77,6 +87,7 @@ export interface FileRouteTypes {
     | '/checkout/close'
     | '/checkout/open'
     | '/orders/create'
+    | '/orders/detail'
     | '/orders/list'
   id:
     | '__root__'
@@ -84,6 +95,7 @@ export interface FileRouteTypes {
     | '/checkout/close'
     | '/checkout/open'
     | '/orders/create'
+    | '/orders/detail'
     | '/orders/list'
   fileRoutesById: FileRoutesById
 }
@@ -92,6 +104,7 @@ export interface RootRouteChildren {
   CheckoutCloseRoute: typeof CheckoutCloseRoute
   CheckoutOpenRoute: typeof CheckoutOpenRoute
   OrdersCreateRoute: typeof OrdersCreateRoute
+  OrdersDetailRoute: typeof OrdersDetailRoute
   OrdersListRoute: typeof OrdersListRoute
 }
 
@@ -109,6 +122,13 @@ declare module '@tanstack/react-router' {
       path: '/orders/list'
       fullPath: '/orders/list'
       preLoaderRoute: typeof OrdersListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders/detail': {
+      id: '/orders/detail'
+      path: '/orders/detail'
+      fullPath: '/orders/detail'
+      preLoaderRoute: typeof OrdersDetailRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/orders/create': {
@@ -140,6 +160,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutCloseRoute: CheckoutCloseRoute,
   CheckoutOpenRoute: CheckoutOpenRoute,
   OrdersCreateRoute: OrdersCreateRoute,
+  OrdersDetailRoute: OrdersDetailRoute,
   OrdersListRoute: OrdersListRoute,
 }
 export const routeTree = rootRouteImport

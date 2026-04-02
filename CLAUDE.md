@@ -137,6 +137,16 @@ ViewModels devem seguir o padrão `effects/[Module]/use<Feature>.viewmodel.ts` �
 </div>
 ```
 
+### Reutilização de Componentes
+
+Antes de criar qualquer novo componente, sempre verifique se já existe um componente em `src/renderer/src/components/` que atenda à necessidade. Prefira reutilizar componentes existentes a criar novos equivalentes. Exemplos:
+
+- Tabelas de dados → use `<DataTable />` de `components/ui/data-table`, não `<Table>` semântico direto
+- Diálogos de confirmação → use `<Dialog />` de `components/ui/dialog`
+- Inputs de formulário → use os componentes de `components/ui/` (Input, Select, etc.)
+
+Crie um novo componente apenas quando nenhum existente for adequado para o caso de uso.
+
 ### Planejamento
 
 Sempre que criar um plano de implementação, quebre-o em tasks isoladas usando o `TaskCreate`. Cada task deve:
