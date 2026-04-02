@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useQuery } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import type { BaseSyntheticEvent } from 'react'
 
 import { OrderSummary } from '@/services/orders/orders.dto'
@@ -63,13 +64,15 @@ export function useListOrdersViewModel(): ListOrdersViewModel {
     }
   }
 
+  const navigate = useNavigate()
+
   const handleFilterSubmit = handleSubmit((values) => {
     setFilters(values)
     setOffset(0)
   })
 
-  function handleOrderClick(_order: OrderSummary): void {
-    // TODO: navigate to order detail screen
+  function handleOrderClick(order: OrderSummary): void {
+    navigate({ to: '/orders/detail', search: { id: order.id } })
   }
 
   return {
