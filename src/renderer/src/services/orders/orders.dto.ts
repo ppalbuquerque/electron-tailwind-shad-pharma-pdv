@@ -29,3 +29,26 @@ export interface ListOrdersResponse {
   limit: number
   offset: number
 }
+
+export interface OrderItemDetail {
+  id: string
+  amount: number
+  totalValue: number
+  boxType: 'unit' | 'box'
+  medication: {
+    id: number
+    name: string
+    unitPrice: number
+    boxPrice: number
+  }
+}
+
+export interface OrderDetail {
+  id: string
+  totalValue: number
+  paymentValue: number
+  status: 'COMPLETE' | 'CANCELLED' | 'PROCESSING'
+  createdAt: string
+  updatedAt: string
+  orderItems: OrderItemDetail[]
+}
