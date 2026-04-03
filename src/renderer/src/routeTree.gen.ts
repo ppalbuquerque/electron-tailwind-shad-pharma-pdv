@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as OrdersListRouteImport } from './routes/orders/list'
 import { Route as OrdersDetailRouteImport } from './routes/orders/detail'
 import { Route as OrdersCreateRouteImport } from './routes/orders/create'
+import { Route as MedicationListRouteImport } from './routes/medication/list'
 import { Route as CheckoutOpenRouteImport } from './routes/checkout/open'
 import { Route as CheckoutCloseRouteImport } from './routes/checkout/close'
 
@@ -36,6 +37,11 @@ const OrdersCreateRoute = OrdersCreateRouteImport.update({
   path: '/orders/create',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MedicationListRoute = MedicationListRouteImport.update({
+  id: '/medication/list',
+  path: '/medication/list',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CheckoutOpenRoute = CheckoutOpenRouteImport.update({
   id: '/checkout/open',
   path: '/checkout/open',
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/checkout/close': typeof CheckoutCloseRoute
   '/checkout/open': typeof CheckoutOpenRoute
+  '/medication/list': typeof MedicationListRoute
   '/orders/create': typeof OrdersCreateRoute
   '/orders/detail': typeof OrdersDetailRoute
   '/orders/list': typeof OrdersListRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/checkout/close': typeof CheckoutCloseRoute
   '/checkout/open': typeof CheckoutOpenRoute
+  '/medication/list': typeof MedicationListRoute
   '/orders/create': typeof OrdersCreateRoute
   '/orders/detail': typeof OrdersDetailRoute
   '/orders/list': typeof OrdersListRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/checkout/close': typeof CheckoutCloseRoute
   '/checkout/open': typeof CheckoutOpenRoute
+  '/medication/list': typeof MedicationListRoute
   '/orders/create': typeof OrdersCreateRoute
   '/orders/detail': typeof OrdersDetailRoute
   '/orders/list': typeof OrdersListRoute
@@ -78,6 +87,7 @@ export interface FileRouteTypes {
     | '/'
     | '/checkout/close'
     | '/checkout/open'
+    | '/medication/list'
     | '/orders/create'
     | '/orders/detail'
     | '/orders/list'
@@ -86,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/checkout/close'
     | '/checkout/open'
+    | '/medication/list'
     | '/orders/create'
     | '/orders/detail'
     | '/orders/list'
@@ -94,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/checkout/close'
     | '/checkout/open'
+    | '/medication/list'
     | '/orders/create'
     | '/orders/detail'
     | '/orders/list'
@@ -103,6 +115,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CheckoutCloseRoute: typeof CheckoutCloseRoute
   CheckoutOpenRoute: typeof CheckoutOpenRoute
+  MedicationListRoute: typeof MedicationListRoute
   OrdersCreateRoute: typeof OrdersCreateRoute
   OrdersDetailRoute: typeof OrdersDetailRoute
   OrdersListRoute: typeof OrdersListRoute
@@ -138,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrdersCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/medication/list': {
+      id: '/medication/list'
+      path: '/medication/list'
+      fullPath: '/medication/list'
+      preLoaderRoute: typeof MedicationListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/checkout/open': {
       id: '/checkout/open'
       path: '/checkout/open'
@@ -159,6 +179,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CheckoutCloseRoute: CheckoutCloseRoute,
   CheckoutOpenRoute: CheckoutOpenRoute,
+  MedicationListRoute: MedicationListRoute,
   OrdersCreateRoute: OrdersCreateRoute,
   OrdersDetailRoute: OrdersDetailRoute,
   OrdersListRoute: OrdersListRoute,
