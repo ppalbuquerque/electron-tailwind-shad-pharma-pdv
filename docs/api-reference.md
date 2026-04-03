@@ -275,7 +275,15 @@ CRUD completo do catálogo de medicamentos com busca por texto.
 | `limit` | number | `10` | Itens por página |
 | `offset` | number | `0` | Deslocamento |
 
-**Response `200`** — array de objetos `Medication` (schema abaixo).
+**Response `200`**
+```json
+{
+  "medications": [ /* array de objetos Medication (schema abaixo) */ ],
+  "nextPage": 15
+}
+```
+
+> `nextPage` contém o valor do próximo `offset` a ser usado. Retorna `null` quando não há mais páginas.
 
 ---
 
@@ -360,11 +368,12 @@ Todos os campos são obrigatórios.
 | `chemicalComposition` | string | Composição química / princípio ativo |
 | `stockAvailability` | integer | Quantidade em estoque |
 | `shelfLocation` | string | Localização na prateleira |
-| `boxPrice` | number | Preço por caixa |
-| `unitPrice` | number | Preço por unidade |
+| `boxPrice` | string | Preço por caixa (decimal serializado como string) |
+| `unitPrice` | string | Preço por unidade (decimal serializado como string) |
 | `usefulness` | string | Indicação terapêutica |
 | `dosageInstructions` | string | Posologia |
 | `samplePhotoUrl` | string | URL da foto do produto |
+| `fullTextSearch` | string | Vetor de busca full-text (uso interno) |
 | `createdAt` | ISO 8601 | Data de criação |
 | `updatedAt` | ISO 8601 | Data da última atualização |
 
