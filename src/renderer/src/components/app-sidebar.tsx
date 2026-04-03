@@ -61,6 +61,12 @@ const routes = [
     icon: BaggageClaim,
     url: '/checkout/close',
     hotkey: 'F6'
+  },
+  {
+    title: 'Medicamentos',
+    icon: BriefcaseMedical,
+    url: '/medication/list',
+    hotkey: 'F7'
   }
 ]
 
