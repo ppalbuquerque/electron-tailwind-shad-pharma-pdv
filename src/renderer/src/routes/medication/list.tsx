@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
 import { DataTable } from '@/components/ui/data-table'
 import { Button } from '@/components/ui/button'
@@ -18,6 +18,7 @@ function ListMedicationsPage(): ReactNode {
     register,
     handleSearchSubmit
   } = useListMedicationsViewModel()
+  const navigate = useNavigate()
 
   return (
     <div className="p-6">
@@ -37,6 +38,7 @@ function ListMedicationsPage(): ReactNode {
           loadingMessage="Carregando medicamentos..."
           emptyMessage="Nenhum medicamento encontrado"
           getRowClassName={(row) => (row.stockAvailability <= 0 ? 'bg-red-100 text-red-800' : '')}
+          onConfirmSelection={(row) => navigate({ to: '/medication/$id', params: { id: String(row.id) } })}
         />
 
         <div className="flex items-center justify-between">
