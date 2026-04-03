@@ -139,17 +139,35 @@ ViewModels devem seguir o padrão `effects/[Module]/use<Feature>.viewmodel.ts` �
 
 ### Reutilização de Componentes
 
-Antes de criar qualquer novo componente, sempre verifique se já existe um componente em `src/renderer/src/components/` que atenda à necessidade. Prefira reutilizar componentes existentes a criar novos equivalentes. Exemplos:
+Antes de criar qualquer novo componente, **consulte `docs/components.md`** — ele é a fonte de verdade dos componentes reutilizáveis do projeto. Não varre a codebase; leia o documento primeiro. Crie um novo componente apenas quando nenhum existente for adequado para o caso de uso.
 
-- Tabelas de dados → use `<DataTable />` de `components/ui/data-table`, não `<Table>` semântico direto
-- Diálogos de confirmação → use `<Dialog />` de `components/ui/dialog`
-- Inputs de formulário → use os componentes de `components/ui/` (Input, Select, etc.)
-
-Crie um novo componente apenas quando nenhum existente for adequado para o caso de uso.
+Exemplos rápidos:
+- Tabelas de dados → `<DataTable />` (`components/ui/data-table`)
+- Diálogos de confirmação → `<Dialog />` (`components/ui/dialog`)
+- Inputs de formulário → `components/ui/` (Input, Select, MoneyInput, etc.)
+- Par chave-valor → `<BoxValue />` (`components/ui/box-value`)
 
 ### Planejamento
 
-Sempre que criar um plano de implementação, quebre-o em tasks isoladas usando o `TaskCreate`. Cada task deve:
-- Ter escopo único e bem definido (uma responsabilidade por task)
-- Ser executável de forma independente
-- Ser marcada como concluída imediatamente após sua execução
+Sempre que criar um plano de implementação:
+
+1. **Consulte a documentação do módulo** que será modificado em `docs/`. Cada módulo possui um arquivo dedicado (ex: `docs/medication-module.md`). Use essas informações como contexto antes de iniciar o planejamento — não assuma contratos, tipos ou comportamentos sem verificar.
+
+2. **Quebre o plano em tasks isoladas** usando o `TaskCreate`. Cada task deve:
+   - Ter escopo único e bem definido (uma responsabilidade por task)
+   - Ser executável de forma independente
+   - Ser marcada como concluída imediatamente após sua execução
+
+3. **Inclua sempre uma task final de atualização de docs**: ao final de qualquer implementação que altere contratos de API, tipos, comportamentos de módulo ou componentes reutilizáveis, inclua uma task para atualizar o arquivo de documentação correspondente em `docs/`. Documentação desatualizada é tratada como bug.
+
+### Manutenção da Documentação
+
+Os arquivos em `docs/` devem refletir sempre o estado atual do código:
+
+| Documento | Atualizar quando |
+|-----------|-----------------|
+| `docs/api-reference.md` | Contratos de endpoint mudam (request, response, params) |
+| `docs/components.md` | Um componente reutilizável é criado, alterado ou tem novos props |
+| `docs/medication-module.md` | Tipos, endpoints, comportamento ou arquivos do módulo mudam |
+
+A atualização da documentação deve entrar como **task explícita no planejamento**, não como etapa implícita.
