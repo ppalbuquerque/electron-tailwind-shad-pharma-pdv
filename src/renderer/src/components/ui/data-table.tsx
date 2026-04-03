@@ -32,6 +32,7 @@ interface DataTableProps<TData, TValue> {
   emptyMessage?: string
   onConfirmSelection?: (row: TData) => void
   onDeleteSelection?: (row: TData) => void
+  getRowClassName?: (row: TData) => string
 }
 
 const rowVariants = cva('', {
@@ -57,7 +58,8 @@ export function DataTable<TData, TValue>({
   loadingMessage = 'Carregando...',
   emptyMessage = 'Nenhum resultado encontrado',
   onConfirmSelection,
-  onDeleteSelection
+  onDeleteSelection,
+  getRowClassName
 }: DataTableProps<TData, TValue>): ReactNode {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const table = useReactTable({
@@ -155,7 +157,11 @@ export function DataTable<TData, TValue>({
             <TableRow
               key={row.id}
               data-state={row.getIsSelected() && 'selected'}
-              className={cn(rowVariants({ variant: row.getIsSelected() ? 'selected' : 'default' }))}
+              className={cn(
+                row.getIsSelected()
+                  ? rowVariants({ variant: 'selected' })
+                  : cn(rowVariants({ variant: 'default' }), getRowClassName?.(row.original))
+              )}
               onClick={row.getToggleSelectedHandler()}
             >
               {row.getVisibleCells().map((cell) => (
