@@ -13,6 +13,8 @@ Componentes genéricos sem domínio fixo, baseados em shadcn/ui + Radix UI + Tai
 ### `<Button />`
 **Arquivo:** `components/ui/button.tsx`
 
+**Quando usar:** qualquer ação do usuário que dispara um evento (submit, navegação, abertura de modal, confirmação).
+
 Botão customizável com múltiplas variantes e tamanhos.
 
 **Props:**
@@ -43,6 +45,8 @@ asChild?: boolean  // composição via Radix Slot
 ### `<Input />`
 **Arquivo:** `components/ui/input.tsx`
 
+**Quando usar:** campos de texto, número, data, arquivo e demais tipos nativos de input — exceto valores monetários (use `<MoneyInput />`) e seleção de opções (use `<Select />`).
+
 Input HTML estilizado com Tailwind CSS.
 
 **Props:** `React.ComponentProps<'input'>` (todos os atributos nativos de input)
@@ -57,6 +61,8 @@ Input HTML estilizado com Tailwind CSS.
 
 ### `<Select />` e família
 **Arquivo:** `components/ui/select.tsx`
+
+**Quando usar:** campos de seleção com lista fixa de opções (ex: tipo de caixa, status, categoria). Sempre use junto com `Controller` do react-hook-form.
 
 Select acessível baseado em Radix UI. Sempre use junto com `Controller` do react-hook-form.
 
@@ -91,6 +97,8 @@ Select acessível baseado em Radix UI. Sempre use junto com `Controller` do reac
 
 ### `<DataTable />`
 **Arquivo:** `components/ui/data-table.tsx`
+
+**Quando usar:** listagens paginadas ou navegáveis por teclado. Sempre que a tela exibir uma coleção de registros com colunas.
 
 Tabela de dados com TanStack React Table. Suporta seleção de linha, navegação por teclado, estados de carregamento e vazio.
 
@@ -148,6 +156,8 @@ export const listItemsColumns: ColumnDef<MyType>[] = [
 ### `<Dialog />` e família
 **Arquivo:** `components/ui/dialog.tsx`
 
+**Quando usar:** confirmações de ação destrutiva, formulários em sobreposição ou exibição de detalhes sem navegar para outra rota.
+
 Modal de diálogo baseado em Radix UI. Use para confirmações, formulários e detalhes.
 
 **Componentes:**
@@ -186,9 +196,12 @@ showCloseButton?: boolean  // padrão: true
 
 Input formatado para valores monetários em Real (R$). Sempre use com `Controller` do react-hook-form.
 
+**Quando usar:** sempre que o campo representar um valor monetário (preços, totais, valores de pagamento). Nunca use `<Input type="number" />` para campos de dinheiro.
+
 **Props:**
 ```typescript
 onValueChange?: (value: string | undefined, name?: string, values?: CurrencyInputOnChangeValues) => void
+defaultValue?: number | string
 ```
 
 **Exemplo:**
@@ -205,10 +218,27 @@ onValueChange?: (value: string | undefined, name?: string, values?: CurrencyInpu
 />
 ```
 
+**Com valor inicial (formulários de edição):**
+```tsx
+<Controller
+  name="boxPrice"
+  control={control}
+  render={({ field }) => (
+    <MoneyInput
+      ref={field.ref}
+      defaultValue={field.value}
+      onValueChange={(_, __, values) => field.onChange(values?.value ?? '')}
+    />
+  )}
+/>
+```
+
 ---
 
 ### `<BoxValue />`
 **Arquivo:** `components/ui/box-value.tsx`
+
+**Quando usar:** exibição somente leitura de um par chave-valor em telas de detalhe ou resumo. Não usar para campos editáveis.
 
 Componente de exibição de par chave-valor. Ideal para resumos e painéis informativos.
 

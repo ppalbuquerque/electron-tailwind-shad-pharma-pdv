@@ -11,8 +11,9 @@ O módulo de medicamentos permite:
 - Buscar medicamentos por nome via full-text search
 - Visualizar disponibilidade de estoque com alerta visual para itens zerados
 - Visualizar detalhes completos de um medicamento
+- Editar dados de um medicamento (incluindo upload de nova imagem)
 
-**Rotas de acesso:** `/medication/list` (atalho `F7`), `/medication/:id`
+**Rotas de acesso:** `/medication/list` (atalho `F7`), `/medication/:id`, `/medication/edit/:id`
 
 ---
 
@@ -24,14 +25,18 @@ src/renderer/src/
 │   ├── medication.service.ts       # Chamadas HTTP ao backend
 │   ├── medication.dto.ts           # Tipos e interfaces de request/response
 │   └── medication.query.keys.ts    # Chaves do React Query
+├── services/files/
+│   └── files.service.ts            # Upload de arquivos (POST /files)
 ├── effects/medication/
 │   ├── useListMedications.viewmodel.ts  # Lógica de negócio da tela de listagem
-│   └── useMedicationDetail.viewmodel.ts # Lógica de negócio da tela de detalhe
+│   ├── useMedicationDetail.viewmodel.ts # Lógica de negócio da tela de detalhe
+│   └── useEditMedication.viewmodel.ts   # Lógica de negócio da tela de edição
 ├── components/medication/
 │   └── list-medications-columns.tsx     # Definição das colunas da tabela
 ├── routes/medication/
 │   ├── list.tsx                    # Página de listagem
-│   └── $id.tsx                     # Página de detalhe (/medication/:id)
+│   ├── $id.tsx                     # Página de detalhe (/medication/:id)
+│   └── edit.$id.tsx                # Página de edição (/medication/edit/:id)
 └── types/
     └── medication.d.ts             # Tipo raw da API (legado, snake_case)
 ```
@@ -79,6 +84,22 @@ Fonte de verdade: `docs/api-reference.md`. Resumo dos endpoints usados neste mó
 
 ---
 
+### `PUT /medication` — Atualizar medicamento
+
+**Body:** objeto `UpdateMedicationDTO`
+
+**Response `200`:** sem corpo
+
+---
+
+### `POST /files` — Upload de arquivo
+
+**Body:** `multipart/form-data` com campo `file`
+
+**Response `200`:** objeto `UploadFileResponse`
+
+---
+
 ## Tipos
 
 ### `MedicationSummary` (DTO interno)
@@ -89,8 +110,8 @@ interface MedicationSummary {
   id: number
   name: string
   chemicalComposition: string
-  boxPrice: string        // Decimal serializado como string (ex: "10.00")
-  unitPrice: string       // Decimal serializado como string
+  boxPrice: number        // Inteiro em centavos (ex: 4800 = R$ 48,00)
+  unitPrice: number       // Inteiro em centavos
   stockAvailability: number
 }
 ```
@@ -136,13 +157,44 @@ interface MedicationDetail {
   chemicalComposition: string
   stockAvailability: number
   shelfLocation: string
-  boxPrice: string
-  unitPrice: string
+  boxPrice: number        // Inteiro em centavos
+  unitPrice: number       // Inteiro em centavos
   usefulness: string
   dosageInstructions: string
   samplePhotoUrl: string
   createdAt: string
   updatedAt: string
+}
+```
+
+### `UpdateMedicationDTO`
+**Arquivo:** `services/medication/medication.dto.ts`
+
+```typescript
+interface UpdateMedicationDTO {
+  id: number
+  name?: string
+  chemicalComposition?: string
+  stockAvailability?: number
+  shelfLocation?: string
+  boxPrice?: number       // Inteiro em centavos
+  unitPrice?: number      // Inteiro em centavos
+  usefulness?: string
+  dosageInstructions?: string
+  samplePhotoUrl?: string
+}
+```
+
+### `UploadFileResponse`
+**Arquivo:** `services/medication/medication.dto.ts`
+
+```typescript
+interface UploadFileResponse {
+  id: number
+  fileName: string
+  contentLength: number
+  contentType: string
+  url: string
 }
 ```
 
@@ -162,6 +214,18 @@ class MedicationService {
 
   // Detalhe por ID — GET /medication/:id
   static async getMedicationById(id: number): Promise<MedicationDetail>
+
+  // Atualizar medicamento — PUT /medication
+  static async updateMedication(payload: UpdateMedicationDTO): Promise<void>
+}
+```
+
+**Arquivo:** `services/files/files.service.ts`
+
+```typescript
+class FilesService {
+  // Upload de arquivo — POST /files
+  static async uploadFile(file: File): Promise<UploadFileResponse>
 }
 ```
 
@@ -226,6 +290,30 @@ interface MedicationDetailViewModel {
 
 ---
 
+### `useEditMedicationViewModel`
+**Arquivo:** `effects/medication/useEditMedication.viewmodel.ts`
+
+```typescript
+interface EditMedicationViewModel {
+  register: UseFormRegister<EditMedicationForm>
+  errors: FieldErrors<EditMedicationForm>
+  isValid: boolean
+  isSubmitting: boolean
+  currentPhotoUrl: string | undefined
+  onSubmit: () => Promise<void>
+}
+```
+
+**Comportamento:**
+- Lê o cache do React Query para `MEDICATION_DETAIL` e pré-popula o formulário via `defaultValues`
+- Se nenhum cache estiver disponível, o formulário inicia vazio
+- Ao submeter: se `photo` for fornecida, faz upload via `FilesService.uploadFile` antes de salvar
+- Em caso de erro no upload, exibe `toast.error` e interrompe o fluxo
+- Após salvar com sucesso: invalida as queries de `MEDICATION_DETAIL` e `LIST_MEDICATIONS`, exibe `toast.success` e navega para `/medication/:id`
+- Validação via Zod com `mode: 'onBlur'`
+
+---
+
 ## Componente de colunas
 
 **Arquivo:** `components/medication/list-medications-columns.tsx`
@@ -235,8 +323,8 @@ interface MedicationDetailViewModel {
 | Nome | `name` | — |
 | Composição | `chemicalComposition` | Truncado em 40 chars; tooltip exibe valor completo |
 | Estoque | `stockAvailability` | — |
-| Preço caixa | `boxPrice` | Formatado com `formatMoney` |
-| Preço unitário | `unitPrice` | Formatado com `formatMoney` |
+| Preço caixa | `boxPrice` | Formatado com `formatMoneyFromCents` |
+| Preço unitário | `unitPrice` | Formatado com `formatMoneyFromCents` |
 
 ---
 
@@ -270,7 +358,7 @@ interface MedicationDetailViewModel {
 ```
 [ Foto do medicamento (samplePhotoUrl) ]
 
-[ Nome do medicamento ]  [ Botão Editar (noop) ]
+[ Nome do medicamento ]  [ Botão Editar ]
 
 [ Informações Gerais ]        ← box com borda preta
   Nome, Composição Química, Indicação Terapêutica, Posologia
@@ -289,7 +377,36 @@ interface MedicationDetailViewModel {
 - Loading: exibe mensagem de carregamento
 - Erro ou sem dados: exibe `"Ocorreu um erro ao buscar os dados do medicamento."`
 - ESC navega de volta para `/medication/list`
-- Botão **Editar** está desabilitado (noop)
+- Botão **Editar** navega para `/medication/edit/:id`
+
+---
+
+### `/medication/edit/:id`
+**Arquivo:** `routes/medication/edit.$id.tsx`
+
+#### Layout
+```
+[ Título: "Editar Medicamento" ]
+
+[ Informações Gerais ]        ← box com borda preta
+  Nome, Composição Química, Indicação Terapêutica, Posologia
+
+[ Informações de Estoque ]    ← box com borda preta
+  Localização na Prateleira, Estoque Disponível
+
+[ Informações de Preço ]      ← box com borda preta
+  Preço por Caixa, Preço por Unidade
+
+[ Imagem do Produto ]         ← box com borda preta
+  Imagem atual (se existir), input de nova imagem (opcional)
+
+[ Botão Salvar ] (alinhado à direita, desabilitado durante submit ou quando inválido)
+```
+
+#### Comportamento
+- Formulário pré-populado a partir do cache React Query do detalhe
+- Submit desabilitado enquanto `isSubmitting` ou `!isValid`
+- Após salvar: navega de volta para `/medication/:id`
 
 ---
 
@@ -298,7 +415,7 @@ interface MedicationDetailViewModel {
 1. Medicamentos com `stockAvailability <= 0` são destacados em vermelho na listagem
 2. A busca substitui completamente a listagem paginada — não são filtros sobrepostos
 3. Limpar o campo de busca e submeter retorna à listagem paginada do início
-4. `boxPrice` e `unitPrice` chegam como string do backend e devem ser convertidos via `parseFloat` antes de formatar
+4. `boxPrice` e `unitPrice` chegam como inteiro em centavos do backend (ex: `4800` = R$ 48,00); usar `formatMoneyFromCents` de `utils/format-money` para exibição
 
 ---
 
