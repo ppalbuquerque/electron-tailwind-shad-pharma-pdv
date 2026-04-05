@@ -82,6 +82,30 @@ The app is keyboard-driven (POS context):
 - **Enter**: Submit forms / advance focus between inputs
 - **Esc**: Close dialogs
 
+### ViewModel — Responsabilidades
+
+Todo o código de comportamento de um componente deve residir no viewmodel, nunca no componente:
+
+- **Hooks de lifecycle** (`useEffect`, `useRef`, foco automático, efeitos colaterais) → viewmodel
+- **Controle de estado** (`useState`, valores derivados, flags de loading) → viewmodel
+- **Listeners de teclado** → sempre via `useHotkeys` da biblioteca `react-hotkeys-hook`, declarados no viewmodel
+
+O componente é exclusivamente declarativo — recebe dados e callbacks do viewmodel e os conecta ao JSX.
+
+```tsx
+// ✅ Correto — listener de teclado no viewmodel via useHotkeys
+// closeCheckout.viewmodel.ts
+useHotkeys('enter', handleConfirm, { enabled: isModalOpen && !isPending, preventDefault: true })
+useHotkeys('escape', handleCancel, { enabled: isModalOpen })
+
+// ❌ Errado — listener de teclado inline no componente
+<DialogContent onKeyDown={(e) => { if (e.key === 'Enter') handleConfirm() }}>
+```
+
+### Design de Interfaces
+
+Ao desenvolver componentes, páginas ou qualquer interface visual, carregue a skill `frontend-design` antes de escrever código de UI. Isso garante qualidade visual e consistência com os padrões do projeto.
+
 ### Form Inputs
 
 All form inputs **must** be controlled via `react-hook-form`. Never use `useState` to manage input values directly.
