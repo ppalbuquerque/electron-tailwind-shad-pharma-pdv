@@ -7,8 +7,8 @@ export interface MedicationSummary {
   id: number
   name: string
   chemicalComposition: string
-  boxPrice: string
-  unitPrice: string
+  boxPrice: number
+  unitPrice: number
   stockAvailability: number
 }
 
@@ -23,11 +23,32 @@ export interface MedicationDetail {
   chemicalComposition: string
   stockAvailability: number
   shelfLocation: string
-  boxPrice: string
-  unitPrice: string
+  boxPrice: number
+  unitPrice: number
   usefulness: string
   dosageInstructions: string
   samplePhotoUrl: string
   createdAt: string
   updatedAt: string
+}
+
+export interface UpdateMedicationDTO {
+  id: number
+  name?: string
+  chemicalComposition?: string
+  stockAvailability?: number
+  shelfLocation?: string
+  boxPrice?: number
+  unitPrice?: number
+  usefulness?: string
+  dosageInstructions?: string
+  samplePhotoUrl?: string
+}
+
+export interface UploadFileResponse {
+  id: number
+  fileName: string
+  contentLength: number
+  contentType: string
+  url: string
 }

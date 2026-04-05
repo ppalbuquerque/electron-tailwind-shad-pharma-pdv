@@ -195,8 +195,8 @@ Gerencia pedidos dentro de uma sessão de caixa ativa.
       "medication": {
         "id": 1,
         "name": "Dipirona 500mg",
-        "unitPrice": 60.00,
-        "boxPrice": 480.00
+        "unitPrice": 6000,
+        "boxPrice": 48000
       }
     }
   ]
@@ -275,15 +275,7 @@ CRUD completo do catálogo de medicamentos com busca por texto.
 | `limit` | number | `10` | Itens por página |
 | `offset` | number | `0` | Deslocamento |
 
-**Response `200`**
-```json
-{
-  "medications": [ /* array de objetos Medication (schema abaixo) */ ],
-  "nextPage": 15
-}
-```
-
-> `nextPage` contém o valor do próximo `offset` a ser usado. Retorna `null` quando não há mais páginas.
+**Response `200`** — array de objetos `Medication` (schema abaixo).
 
 ---
 
@@ -294,6 +286,26 @@ Utiliza full-text search em português (tsvector) no banco.
 **Query params:** `q` (string, obrigatório)
 
 **Response `200`** — array de objetos `Medication`.
+
+```json
+[
+  {
+    "id": 11,
+    "name": "Macrodantina",
+    "chemicalComposition": "Nitrofuratoína",
+    "stockAvailability": 10,
+    "shelfLocation": "3F",
+    "boxPrice": 1000,
+    "unitPrice": 1000,
+    "usefulness": "agente antibacteriano...",
+    "samplePhotoUrl": "BLANK",
+    "dosageInstructions": "De 8 em 8 horas",
+    "fullTextSearch": null,
+    "createdAt": "2025-11-07T18:58:08.394Z",
+    "updatedAt": "2025-11-07T18:58:08.394Z"
+  }
+]
+```
 
 ---
 
@@ -319,8 +331,8 @@ Utiliza full-text search em português (tsvector) no banco.
   "chemicalComposition": "Metamizol sódico",
   "stockAvailability": 200,
   "shelfLocation": "A-12",
-  "boxPrice": 48.00,
-  "unitPrice": 6.00,
+  "boxPrice": 4800,
+  "unitPrice": 600,
   "usefulness": "Analgésico e antitérmico",
   "dosageInstructions": "1 comprimido a cada 6 horas",
   "samplePhotoUrl": "https://..."
@@ -368,12 +380,11 @@ Todos os campos são obrigatórios.
 | `chemicalComposition` | string | Composição química / princípio ativo |
 | `stockAvailability` | integer | Quantidade em estoque |
 | `shelfLocation` | string | Localização na prateleira |
-| `boxPrice` | string | Preço por caixa (decimal serializado como string) |
-| `unitPrice` | string | Preço por unidade (decimal serializado como string) |
+| `boxPrice` | integer | Preço por caixa em centavos (ex: 4800 = R$ 48,00) |
+| `unitPrice` | integer | Preço por unidade em centavos (ex: 600 = R$ 6,00) |
 | `usefulness` | string | Indicação terapêutica |
 | `dosageInstructions` | string | Posologia |
 | `samplePhotoUrl` | string | URL da foto do produto |
-| `fullTextSearch` | string | Vetor de busca full-text (uso interno) |
 | `createdAt` | ISO 8601 | Data de criação |
 | `updatedAt` | ISO 8601 | Data da última atualização |
 
