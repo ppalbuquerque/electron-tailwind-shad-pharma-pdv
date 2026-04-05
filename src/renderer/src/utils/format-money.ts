@@ -7,4 +7,8 @@ function formatMoney(amount: number): string {
   return formatted
 }
 
-export { formatMoney }
+function formatMoneyFromCents(cents: number): string {
+  return formatMoney(cents / 100)
+}
+
+export { formatMoney, formatMoneyFromCents }

@@ -11,19 +11,23 @@ interface MoneyInputProps {
         values?: CurrencyInputOnChangeValues | undefined
       ) => void)
     | undefined
+  defaultValue?: number | string
 }
 
-const MoneyInput = forwardRef<HTMLInputElement, MoneyInputProps>(({ onValueChange }, ref) => {
-  return (
-    <CurrencyInput
-      customInput={Input}
-      className="border-slate-200"
-      prefix="R$ "
-      onValueChange={onValueChange}
-      ref={ref}
-    />
-  )
-})
+const MoneyInput = forwardRef<HTMLInputElement, MoneyInputProps>(
+  ({ onValueChange, defaultValue }, ref) => {
+    return (
+      <CurrencyInput
+        customInput={Input}
+        className="border-slate-200"
+        prefix="R$ "
+        onValueChange={onValueChange}
+        defaultValue={defaultValue}
+        ref={ref}
+      />
+    )
+  }
+)
 
 MoneyInput.displayName = 'MoneyInput'
 

@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table'
 
 import { MedicationSummary } from '@/services/medication/medication.dto'
-import { formatMoney } from '@/utils/format-money'
+import { formatMoneyFromCents } from '@/utils/format-money'
 
 export const listMedicationsColumns: ColumnDef<MedicationSummary>[] = [
   {
@@ -25,16 +25,16 @@ export const listMedicationsColumns: ColumnDef<MedicationSummary>[] = [
     accessorKey: 'boxPrice',
     header: 'Preço caixa',
     cell: ({ row }) => {
-      const value: string = row.getValue('boxPrice')
-      return <span>{formatMoney(parseFloat(value))}</span>
+      const value: number = row.getValue('boxPrice')
+      return <span>{formatMoneyFromCents(value)}</span>
     }
   },
   {
     accessorKey: 'unitPrice',
     header: 'Preço unitário',
     cell: ({ row }) => {
-      const value: string = row.getValue('unitPrice')
-      return <span>{formatMoney(parseFloat(value))}</span>
+      const value: number = row.getValue('unitPrice')
+      return <span>{formatMoneyFromCents(value)}</span>
     }
   }
 ]

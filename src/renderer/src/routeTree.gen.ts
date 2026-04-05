@@ -17,6 +17,7 @@ import { Route as MedicationListRouteImport } from './routes/medication/list'
 import { Route as MedicationIdRouteImport } from './routes/medication/$id'
 import { Route as CheckoutOpenRouteImport } from './routes/checkout/open'
 import { Route as CheckoutCloseRouteImport } from './routes/checkout/close'
+import { Route as MedicationEditIdRouteImport } from './routes/medication/edit.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,6 +59,11 @@ const CheckoutCloseRoute = CheckoutCloseRouteImport.update({
   path: '/checkout/close',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MedicationEditIdRoute = MedicationEditIdRouteImport.update({
+  id: '/medication/edit/$id',
+  path: '/medication/edit/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/orders/create': typeof OrdersCreateRoute
   '/orders/detail': typeof OrdersDetailRoute
   '/orders/list': typeof OrdersListRoute
+  '/medication/edit/$id': typeof MedicationEditIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/orders/create': typeof OrdersCreateRoute
   '/orders/detail': typeof OrdersDetailRoute
   '/orders/list': typeof OrdersListRoute
+  '/medication/edit/$id': typeof MedicationEditIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/orders/create': typeof OrdersCreateRoute
   '/orders/detail': typeof OrdersDetailRoute
   '/orders/list': typeof OrdersListRoute
+  '/medication/edit/$id': typeof MedicationEditIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/orders/create'
     | '/orders/detail'
     | '/orders/list'
+    | '/medication/edit/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/orders/create'
     | '/orders/detail'
     | '/orders/list'
+    | '/medication/edit/$id'
   id:
     | '__root__'
     | '/'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/orders/create'
     | '/orders/detail'
     | '/orders/list'
+    | '/medication/edit/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   OrdersCreateRoute: typeof OrdersCreateRoute
   OrdersDetailRoute: typeof OrdersDetailRoute
   OrdersListRoute: typeof OrdersListRoute
+  MedicationEditIdRoute: typeof MedicationEditIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutCloseRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/medication/edit/$id': {
+      id: '/medication/edit/$id'
+      path: '/medication/edit/$id'
+      fullPath: '/medication/edit/$id'
+      preLoaderRoute: typeof MedicationEditIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -204,6 +224,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrdersCreateRoute: OrdersCreateRoute,
   OrdersDetailRoute: OrdersDetailRoute,
   OrdersListRoute: OrdersListRoute,
+  MedicationEditIdRoute: MedicationEditIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

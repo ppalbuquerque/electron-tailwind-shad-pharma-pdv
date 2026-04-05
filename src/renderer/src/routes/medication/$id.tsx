@@ -1,10 +1,10 @@
 import { ReactNode } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
 import { Button } from '@/components/ui/button'
 import { BoxValue } from '@/components/ui/box-value'
 import { useMedicationDetailViewModel } from '@/effects/medication/useMedicationDetail.viewmodel'
-import { formatMoney } from '@/utils/format-money'
+import { formatMoneyFromCents } from '@/utils/format-money'
 
 export const Route = createFileRoute('/medication/$id')({
   component: MedicationDetailPage
@@ -12,6 +12,7 @@ export const Route = createFileRoute('/medication/$id')({
 
 function MedicationDetailPage(): ReactNode {
   const { id } = Route.useParams()
+  const navigate = useNavigate()
   const { medication, isLoading, isError } = useMedicationDetailViewModel(Number(id))
 
   if (isLoading) {
@@ -28,7 +29,9 @@ function MedicationDetailPage(): ReactNode {
     return (
       <div className="p-6">
         <div className="bg-white rounded-sm p-12 border-slate-300 border text-black">
-          <p className="text-sm text-muted-foreground">Ocorreu um erro ao buscar os dados do medicamento.</p>
+          <p className="text-sm text-muted-foreground">
+            Ocorreu um erro ao buscar os dados do medicamento.
+          </p>
         </div>
       </div>
     )
@@ -45,7 +48,12 @@ function MedicationDetailPage(): ReactNode {
 
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">{medication.name}</h1>
-          <Button variant="outline" disabled>Editar</Button>
+          <Button
+            variant="outline"
+            onClick={() => navigate({ to: '/medication/edit/$id', params: { id } })}
+          >
+            Editar
+          </Button>
         </div>
 
         <section className="border border-black rounded-sm p-4 flex flex-col gap-3">
@@ -64,8 +72,11 @@ function MedicationDetailPage(): ReactNode {
 
         <section className="border border-black rounded-sm p-4 flex flex-col gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-wide">Informações de Preço</h2>
-          <BoxValue title="Preço por Caixa" value={formatMoney(parseFloat(medication.boxPrice))} />
-          <BoxValue title="Preço por Unidade" value={formatMoney(parseFloat(medication.unitPrice))} />
+          <BoxValue title="Preço por Caixa" value={formatMoneyFromCents(medication.boxPrice)} />
+          <BoxValue
+            title="Preço por Unidade"
+            value={formatMoneyFromCents(medication.unitPrice)}
+          />
         </section>
 
         <section className="border border-black rounded-sm p-4 flex flex-col gap-3">
