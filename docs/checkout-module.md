@@ -11,7 +11,7 @@ Capacidades:
 - Fechar o caixa com valor físico de fechamento
 - Exibir badge visual de estado do caixa (aberto/fechado) no layout
 
-**Rotas de acesso:** `/checkout/open` (atalho `F4`), `/checkout/close` (atalho `F5`)
+**Rotas de acesso:** `/checkout/open` (atalho `F2`), `/checkout/resume` (atalho `F4`), `/checkout/close` (atalho `F6`)
 
 ---
 
@@ -25,11 +25,13 @@ src/renderer/src/
 │       └── checkout.query.keys.ts
 ├── effects/checkout/
 │   ├── openCheckout.viewmodel.ts
-│   └── closeCheckout.viewmodel.ts
+│   ├── closeCheckout.viewmodel.ts
+│   └── checkoutResume.viewmodel.ts
 ├── components/layout/
 │   └── checkoutStatus.tsx          # badge reutilizável de status
 └── routes/checkout/
     ├── open.tsx
+    ├── resume.tsx
     └── close.tsx
 ```
 
@@ -219,6 +221,29 @@ interface OpenCheckoutViewModel {
 
 ---
 
+### `useCheckoutResumeViewModel`
+
+**Arquivo:** `effects/checkout/checkoutResume.viewmodel.ts`
+
+```typescript
+interface CheckoutResumeViewModel {
+  isCheckoutOpen: boolean
+  isLoading: boolean
+  initialValue: number
+  totalOrdersValue: number
+  totalOrderCount: number
+  grandTotal: number
+}
+```
+
+**Comportamento:**
+- Lê `isCheckoutOpen` diretamente da cache via `useQueryClient().getQueryData([CHECKOUT_QUERY_KEYS.STATUS])` — **sem disparar nova request à API**.
+- Busca dados via `useQuery([CHECKOUT_QUERY_KEYS.RESUME])` com `enabled: isCheckoutOpen` — só executa se o caixa estiver aberto.
+- Em caso de erro na query resume: exibe toast `'Erro ao buscar resumo do caixa'` via `useEffect` sobre `isError`.
+- Expõe `isLoading` derivado de `isFetching` da query resume.
+
+---
+
 ### `useCloseCheckoutViewModel`
 
 **Arquivo:** `effects/checkout/closeCheckout.viewmodel.ts`
@@ -301,6 +326,43 @@ Badge visual que indica o estado atual do caixa. Componente de layout — não p
 - Botão "Confirmar" desabilitado durante a requisição (`isLoading`)
 - Spinner exibido no botão durante loading
 - Após sucesso navega automaticamente para `/orders/create`
+
+---
+
+### `/checkout/resume`
+
+**Arquivo:** `routes/checkout/resume.tsx`  
+**Atalho:** `F4`
+
+#### Layout — caixa aberto
+
+```
+┌────────────────────────────────────┐
+│  [NotebookText - bg-sky-100]       │
+│  Situação do Caixa                 │
+│  Resumo do caixa atual             │
+│  ─────────────────────────────     │
+│  Valor inicial         R$ xxx      │
+│  ─────────────────────────────     │
+│  Total de vendas       R$ xxx      │
+│  ─────────────────────────────     │
+│  Total de pedidos      N           │
+│  ─────────────────────────────     │
+│  Total no caixa        R$ xxx      │
+└────────────────────────────────────┘
+```
+
+#### Layout — caixa fechado
+
+Igual ao padrão de `/checkout/close`: ícone `LockKeyhole` em `bg-slate-100`, aviso "Caixa fechado".
+
+#### Comportamento
+
+- Verifica `isCheckoutOpen` via cache (`useQueryClient().getQueryData`) — sem nova requisição à API para status.
+- Exibe `Spinner` centralizado enquanto `isLoading` for `true`.
+- Campos monetários formatados com `formatMoney`; `totalOrderCount` exibido como string simples.
+- `grandTotal` destacado em `text-green-700 font-semibold`.
+- Erro na query resume → toast `'Erro ao buscar resumo do caixa'`.
 
 ---
 

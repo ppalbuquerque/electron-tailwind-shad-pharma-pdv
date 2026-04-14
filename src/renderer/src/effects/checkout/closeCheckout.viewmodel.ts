@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { Control, useForm } from 'react-hook-form'
 import { useHotkeys } from 'react-hotkeys-hook'
 
-import { CheckoutService } from '@/services/checkout.service'
+import { CheckoutService, CheckoutStatusResponse } from '@/services/checkout.service'
 import { CHECKOUT_QUERY_KEYS } from '@/services/checkout/checkout.query.keys'
 
 interface CloseCheckoutForm {
@@ -29,6 +29,7 @@ interface CloseCheckoutViewModel {
 
 function useCloseCheckoutViewModel(): CloseCheckoutViewModel {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -77,6 +78,9 @@ function useCloseCheckoutViewModel(): CloseCheckoutViewModel {
     if (!checkoutStatus?.id) return
     try {
       await closeCheckoutMutation({ checkoutId: checkoutStatus.id, closingValue })
+      queryClient.setQueryData<CheckoutStatusResponse>([CHECKOUT_QUERY_KEYS.STATUS], (prev) =>
+        prev ? { ...prev, isOpen: false } : prev
+      )
       setIsModalOpen(false)
       toast.success('Caixa fechado com sucesso')
       setTimeout(() => {

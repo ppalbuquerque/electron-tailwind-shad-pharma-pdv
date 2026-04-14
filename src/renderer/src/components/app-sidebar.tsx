@@ -47,7 +47,7 @@ const routes = [
   {
     title: 'Situação do Caixa',
     icon: NotebookText,
-    url: '/checkout/report',
+    url: '/checkout/resume',
     hotkey: 'F4'
   },
   {
