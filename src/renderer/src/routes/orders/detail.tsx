@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 
 import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
 import { DataTable } from '@/components/ui/data-table'
 import {
   Dialog,
@@ -35,8 +36,15 @@ export const Route = createFileRoute('/orders/detail')({
 
 function OrderDetailPage(): ReactNode {
   const { id } = Route.useSearch()
-  const { order, isLoading, isCancelDialogOpen, openCancelDialog, closeCancelDialog } =
-    useOrderDetailViewModel(id)
+  const {
+    order,
+    isLoading,
+    isCancelDialogOpen,
+    isCancelPending,
+    openCancelDialog,
+    closeCancelDialog,
+    handleConfirmCancel
+  } = useOrderDetailViewModel(id)
 
   if (isLoading) {
     return (
@@ -138,7 +146,8 @@ function OrderDetailPage(): ReactNode {
             <Button variant="outline" onClick={closeCancelDialog}>
               Voltar
             </Button>
-            <Button variant="destructive" disabled>
+            <Button variant="destructive" onClick={handleConfirmCancel} disabled={isCancelPending}>
+              {isCancelPending && <Spinner className="mr-2 size-4" />}
               Confirmar Cancelamento
             </Button>
           </DialogFooter>
