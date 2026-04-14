@@ -10,6 +10,8 @@ function getPageTitleByPath(path: RoutesPath): string {
       return 'Fechar Caixa'
     case '/checkout/open':
       return 'Abrir Caixa'
+    case '/checkout/resume':
+      return 'Situação do Caixa'
     case '/orders/list':
       return 'Lista de Pedidos'
     case '/orders/detail':
