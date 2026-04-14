@@ -32,6 +32,11 @@ class OrdersService {
     const { data } = await apiClient.get<OrderDetail>(`/orders/${id}`)
     return data
   }
+
+  static async cancelOrder(id: string): Promise<{ message: string }> {
+    const { data } = await apiClient.put<{ message: string }>(`/orders/cancel/${id}`)
+    return data
+  }
 }
 
 export { OrdersService }
