@@ -6,6 +6,7 @@ import {
   ListMedicationsResponse,
   MedicationDetail,
   UpdateMedicationDTO,
+  CreateMedicationDTO,
 } from './medication.dto'
 
 export type SearchResponse = Pick<Medication, 'name' | 'id' | 'box_price' | 'stock_availability'>[]
@@ -28,6 +29,10 @@ class MedicationService {
 
   static async updateMedication(payload: UpdateMedicationDTO): Promise<void> {
     await apiClient.put('/medication', payload)
+  }
+
+  static async createMedication(payload: CreateMedicationDTO): Promise<void> {
+    await apiClient.post('/medication', payload)
   }
 }
 
