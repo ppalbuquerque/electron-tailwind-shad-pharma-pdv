@@ -12,8 +12,9 @@ O módulo de medicamentos permite:
 - Visualizar disponibilidade de estoque com alerta visual para itens zerados
 - Visualizar detalhes completos de um medicamento
 - Editar dados de um medicamento (incluindo upload de nova imagem)
+- Criar novos medicamentos (incluindo upload de imagem)
 
-**Rotas de acesso:** `/medication/list` (atalho `F7`), `/medication/:id`, `/medication/edit/:id`
+**Rotas de acesso:** `/medication/list` (atalho `F7`), `/medication/:id`, `/medication/edit/:id`, `/medication/create`
 
 ---
 
@@ -30,13 +31,15 @@ src/renderer/src/
 ├── effects/medication/
 │   ├── useListMedications.viewmodel.ts  # Lógica de negócio da tela de listagem
 │   ├── useMedicationDetail.viewmodel.ts # Lógica de negócio da tela de detalhe
-│   └── useEditMedication.viewmodel.ts   # Lógica de negócio da tela de edição
+│   ├── useEditMedication.viewmodel.ts   # Lógica de negócio da tela de edição
+│   └── useCreateMedication.viewmodel.ts # Lógica de negócio da tela de criação
 ├── components/medication/
 │   └── list-medications-columns.tsx     # Definição das colunas da tabela
 ├── routes/medication/
 │   ├── list.tsx                    # Página de listagem
 │   ├── $id.tsx                     # Página de detalhe (/medication/:id)
-│   └── edit.$id.tsx                # Página de edição (/medication/edit/:id)
+│   ├── edit.$id.tsx                # Página de edição (/medication/edit/:id)
+│   └── create.tsx                  # Página de criação (/medication/create)
 └── types/
     └── medication.d.ts             # Tipo raw da API (legado, snake_case)
 ```
@@ -89,6 +92,14 @@ Fonte de verdade: `docs/api-reference.md`. Resumo dos endpoints usados neste mó
 **Body:** objeto `UpdateMedicationDTO`
 
 **Response `200`:** sem corpo
+
+---
+
+### `POST /medication` — Criar medicamento
+
+**Body:** objeto `CreateMedicationDTO`
+
+**Response `201`:** objeto `MedicationDetail` com `id`, `createdAt`, `updatedAt` gerados
 
 ---
 
@@ -185,6 +196,23 @@ interface UpdateMedicationDTO {
 }
 ```
 
+### `CreateMedicationDTO`
+**Arquivo:** `services/medication/medication.dto.ts`
+
+```typescript
+interface CreateMedicationDTO {
+  name: string
+  chemicalComposition: string
+  stockAvailability: number
+  shelfLocation: string
+  boxPrice: number        // Inteiro em centavos
+  unitPrice: number       // Inteiro em centavos
+  usefulness: string
+  dosageInstructions: string
+  samplePhotoUrl?: string
+}
+```
+
 ### `UploadFileResponse`
 **Arquivo:** `services/medication/medication.dto.ts`
 
@@ -217,6 +245,9 @@ class MedicationService {
 
   // Atualizar medicamento — PUT /medication
   static async updateMedication(payload: UpdateMedicationDTO): Promise<void>
+
+  // Criar medicamento — POST /medication
+  static async createMedication(payload: CreateMedicationDTO): Promise<void>
 }
 ```
 
@@ -310,6 +341,30 @@ interface EditMedicationViewModel {
 - Ao submeter: se `photo` for fornecida, faz upload via `FilesService.uploadFile` antes de salvar
 - Em caso de erro no upload, exibe `toast.error` e interrompe o fluxo
 - Após salvar com sucesso: invalida as queries de `MEDICATION_DETAIL` e `LIST_MEDICATIONS`, exibe `toast.success` e navega para `/medication/:id`
+- Validação via Zod com `mode: 'onBlur'`
+
+---
+
+### `useCreateMedicationViewModel`
+**Arquivo:** `effects/medication/useCreateMedication.viewmodel.ts`
+
+```typescript
+interface CreateMedicationViewModel {
+  register: UseFormRegister<CreateMedicationForm>
+  control: Control<CreateMedicationForm>
+  errors: FieldErrors<CreateMedicationForm>
+  isValid: boolean
+  isSubmitting: boolean
+  onSubmit: () => Promise<void>
+}
+```
+
+**Comportamento:**
+- Formulário inicia vazio (sem `defaultValues`)
+- Ao submeter: se `photo` for fornecida, faz upload via `FilesService.uploadFile` antes de criar
+- Em caso de erro no upload, exibe `toast.error('Erro ao subir a imagem')` e interrompe o fluxo
+- Após criar com sucesso: invalida a query `LIST_MEDICATIONS`, exibe `toast.success('Medicamento registrado com sucesso')` e navega para `/medication/list` após 3s
+- Em caso de erro na criação: exibe `toast.error('Erro ao registrar novo medicamento')`
 - Validação via Zod com `mode: 'onBlur'`
 
 ---
@@ -410,6 +465,36 @@ interface EditMedicationViewModel {
 
 ---
 
+### `/medication/create`
+**Arquivo:** `routes/medication/create.tsx`
+
+#### Layout
+```
+[ Título: "Cadastrar Medicamento" ]
+
+[ Informações Gerais ]        ← box com borda preta
+  Nome, Composição Química, Indicação Terapêutica, Posologia
+
+[ Informações de Estoque ]    ← box com borda preta
+  Localização na Prateleira, Estoque Disponível
+
+[ Informações de Preço ]      ← box com borda preta
+  Preço por Caixa, Preço por Unidade
+
+[ Imagem do Produto ]         ← box com borda preta
+  Input de imagem (opcional)
+
+[ Botão Cadastrar ] (alinhado à direita, desabilitado durante submit ou quando inválido)
+```
+
+#### Comportamento
+- Formulário inicia vazio
+- Submit desabilitado enquanto `isSubmitting` ou `!isValid`
+- Após cadastrar: exibe toast de sucesso e navega para `/medication/list` após 3s
+- Botão "Cadastrar Medicamento" na tela de listagem acessa esta rota
+
+---
+
 ## Regras de negócio
 
 1. Medicamentos com `stockAvailability <= 0` são destacados em vermelho na listagem
@@ -421,7 +506,7 @@ interface EditMedicationViewModel {
 
 ## Extensão futura
 
-Para adicionar novos casos de uso ao módulo (ex: edição, criação):
+Para adicionar novos casos de uso ao módulo:
 
 1. Adicionar método estático em `medication.service.ts`
 2. Adicionar tipos em `medication.dto.ts`

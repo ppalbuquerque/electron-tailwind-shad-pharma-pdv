@@ -52,3 +52,15 @@ export interface UploadFileResponse {
   contentType: string
   url: string
 }
+
+export interface CreateMedicationDTO {
+  name: string
+  chemicalComposition: string
+  stockAvailability: number
+  shelfLocation: string
+  boxPrice: number
+  unitPrice: number
+  usefulness: string
+  dosageInstructions: string
+  samplePhotoUrl?: string
+}

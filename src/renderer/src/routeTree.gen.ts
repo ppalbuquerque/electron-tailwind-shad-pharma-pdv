@@ -14,6 +14,7 @@ import { Route as OrdersListRouteImport } from './routes/orders/list'
 import { Route as OrdersDetailRouteImport } from './routes/orders/detail'
 import { Route as OrdersCreateRouteImport } from './routes/orders/create'
 import { Route as MedicationListRouteImport } from './routes/medication/list'
+import { Route as MedicationCreateRouteImport } from './routes/medication/create'
 import { Route as MedicationIdRouteImport } from './routes/medication/$id'
 import { Route as CheckoutResumeRouteImport } from './routes/checkout/resume'
 import { Route as CheckoutOpenRouteImport } from './routes/checkout/open'
@@ -43,6 +44,11 @@ const OrdersCreateRoute = OrdersCreateRouteImport.update({
 const MedicationListRoute = MedicationListRouteImport.update({
   id: '/medication/list',
   path: '/medication/list',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MedicationCreateRoute = MedicationCreateRouteImport.update({
+  id: '/medication/create',
+  path: '/medication/create',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MedicationIdRoute = MedicationIdRouteImport.update({
@@ -77,6 +83,7 @@ export interface FileRoutesByFullPath {
   '/checkout/open': typeof CheckoutOpenRoute
   '/checkout/resume': typeof CheckoutResumeRoute
   '/medication/$id': typeof MedicationIdRoute
+  '/medication/create': typeof MedicationCreateRoute
   '/medication/list': typeof MedicationListRoute
   '/orders/create': typeof OrdersCreateRoute
   '/orders/detail': typeof OrdersDetailRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByTo {
   '/checkout/open': typeof CheckoutOpenRoute
   '/checkout/resume': typeof CheckoutResumeRoute
   '/medication/$id': typeof MedicationIdRoute
+  '/medication/create': typeof MedicationCreateRoute
   '/medication/list': typeof MedicationListRoute
   '/orders/create': typeof OrdersCreateRoute
   '/orders/detail': typeof OrdersDetailRoute
@@ -102,6 +110,7 @@ export interface FileRoutesById {
   '/checkout/open': typeof CheckoutOpenRoute
   '/checkout/resume': typeof CheckoutResumeRoute
   '/medication/$id': typeof MedicationIdRoute
+  '/medication/create': typeof MedicationCreateRoute
   '/medication/list': typeof MedicationListRoute
   '/orders/create': typeof OrdersCreateRoute
   '/orders/detail': typeof OrdersDetailRoute
@@ -116,6 +125,7 @@ export interface FileRouteTypes {
     | '/checkout/open'
     | '/checkout/resume'
     | '/medication/$id'
+    | '/medication/create'
     | '/medication/list'
     | '/orders/create'
     | '/orders/detail'
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/checkout/open'
     | '/checkout/resume'
     | '/medication/$id'
+    | '/medication/create'
     | '/medication/list'
     | '/orders/create'
     | '/orders/detail'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/checkout/open'
     | '/checkout/resume'
     | '/medication/$id'
+    | '/medication/create'
     | '/medication/list'
     | '/orders/create'
     | '/orders/detail'
@@ -153,6 +165,7 @@ export interface RootRouteChildren {
   CheckoutOpenRoute: typeof CheckoutOpenRoute
   CheckoutResumeRoute: typeof CheckoutResumeRoute
   MedicationIdRoute: typeof MedicationIdRoute
+  MedicationCreateRoute: typeof MedicationCreateRoute
   MedicationListRoute: typeof MedicationListRoute
   OrdersCreateRoute: typeof OrdersCreateRoute
   OrdersDetailRoute: typeof OrdersDetailRoute
@@ -195,6 +208,13 @@ declare module '@tanstack/react-router' {
       path: '/medication/list'
       fullPath: '/medication/list'
       preLoaderRoute: typeof MedicationListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/medication/create': {
+      id: '/medication/create'
+      path: '/medication/create'
+      fullPath: '/medication/create'
+      preLoaderRoute: typeof MedicationCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/medication/$id': {
@@ -241,6 +261,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutOpenRoute: CheckoutOpenRoute,
   CheckoutResumeRoute: CheckoutResumeRoute,
   MedicationIdRoute: MedicationIdRoute,
+  MedicationCreateRoute: MedicationCreateRoute,
   MedicationListRoute: MedicationListRoute,
   OrdersCreateRoute: OrdersCreateRoute,
   OrdersDetailRoute: OrdersDetailRoute,
