@@ -23,13 +23,22 @@ function ListMedicationsPage(): ReactNode {
   return (
     <div className="p-6">
       <div className="bg-white rounded-sm p-12 border-slate-300 border text-black flex flex-col gap-4">
-        <form onSubmit={handleSearchSubmit} className="flex flex-row items-end gap-3">
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium">Buscar</label>
-            <Input placeholder="Nome do medicamento..." className="w-[280px]" {...register('q')} />
-          </div>
-          <Button type="submit">Buscar</Button>
-        </form>
+        <div className="flex items-end justify-between">
+          <form onSubmit={handleSearchSubmit} className="flex flex-row items-end gap-3">
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">Buscar</label>
+              <Input
+                placeholder="Nome do medicamento..."
+                className="w-[280px]"
+                {...register('q')}
+              />
+            </div>
+            <Button type="submit">Buscar</Button>
+          </form>
+          <Button onClick={() => navigate({ to: '/medication/create' })}>
+            Cadastrar Medicamento
+          </Button>
+        </div>
 
         <DataTable
           columns={listMedicationsColumns}
