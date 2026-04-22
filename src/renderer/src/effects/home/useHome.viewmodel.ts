@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
 import {
   ShoppingCart,
   BanknoteArrowUp,
@@ -10,8 +9,7 @@ import {
   LucideIcon
 } from 'lucide-react'
 
-import { CHECKOUT_QUERY_KEYS } from '@/services/checkout/checkout.query.keys'
-import { CheckoutStatusResponse } from '@/services/checkout.service'
+import { useCheckoutStatus } from '@/effects/checkout/useCheckoutStatus'
 
 interface HomeShortcut {
   title: string
@@ -27,12 +25,9 @@ interface HomeViewModel {
 }
 
 function useHomeViewModel(): HomeViewModel {
-  const queryClient = useQueryClient()
   const [currentDateTime, setCurrentDateTime] = useState<Date>(new Date())
 
-  const checkoutStatus = queryClient.getQueryData<CheckoutStatusResponse>([
-    CHECKOUT_QUERY_KEYS.STATUS
-  ])
+  const checkoutStatus = useCheckoutStatus()
   const isCheckoutOpen = checkoutStatus?.isOpen ?? false
 
   useEffect(() => {

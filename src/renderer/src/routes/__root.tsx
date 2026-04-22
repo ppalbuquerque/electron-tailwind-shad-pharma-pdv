@@ -17,6 +17,7 @@ const RootLaytout = (): ReactNode => {
   useQuery({
     queryKey: [CHECKOUT_QUERY_KEYS.STATUS],
     queryFn: CheckoutService.getCheckoutStatus,
+    staleTime: Infinity,
   })
 
   useEffect(() => {
@@ -27,7 +28,7 @@ const RootLaytout = (): ReactNode => {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <Header variant="open" routeName={getPageTitleByPath(location.pathname as RoutesPath)} />
+        <Header routeName={getPageTitleByPath(location.pathname as RoutesPath)} />
         <Outlet />
       </SidebarInset>
       <TanStackRouterDevtools />
