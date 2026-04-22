@@ -68,7 +68,8 @@ function CloseOrderSection({
   const { control, onSubmit, displayPaymentValue, change } = useCloseOrderSectionViewModel(
     orderTotalRaw,
     isLoading,
-    onConfirm
+    onConfirm,
+    onCancel,
   )
 
   return (

@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useForm, SubmitHandler, UseFormRegister } from 'react-hook-form'
+
+import { HotkeyScope } from '@/lib/hotkey-scopes'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
@@ -106,20 +108,21 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
   useHotkeys(
     'esc',
     () => {
-      if (searchMedicationDialogIsOpen) {
-        setSearchMedicationDialogIsOpen(false)
-        setTimeout(() => setFocus('medicationName'), 0)
-        return
-      }
-
-      if (isClosingOrder) {
-        return
-      }
-
-      handleOpenCloseOrder()
+      setSearchMedicationDialogIsOpen(false)
+      setTimeout(() => setFocus('medicationName'), 0)
     },
-    { enableOnFormTags: true },
+    {
+      scopes: [HotkeyScope.CONTENT],
+      enabled: searchMedicationDialogIsOpen,
+      enableOnFormTags: true,
+    },
   )
+
+  useHotkeys('esc', handleOpenCloseOrder, {
+    scopes: [HotkeyScope.CONTENT],
+    enabled: !searchMedicationDialogIsOpen && !isClosingOrder,
+    enableOnFormTags: true,
+  })
 
   return {
     searchMedicationDialogIsOpen,
