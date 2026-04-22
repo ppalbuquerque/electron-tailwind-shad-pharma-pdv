@@ -3,7 +3,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { Control, useForm } from 'react-hook-form'
-import { useHotkeys } from 'react-hotkeys-hook'
+import { useHotkeys, useHotkeysContext } from 'react-hotkeys-hook'
+
+import { HotkeyScope } from '@/lib/hotkey-scopes'
 
 import { CheckoutService } from '@/services/checkout.service'
 import { CHECKOUT_QUERY_KEYS } from '@/services/checkout/checkout.query.keys'
@@ -87,8 +89,22 @@ function useCloseCheckoutViewModel(): CloseCheckoutViewModel {
     }
   }
 
-  useHotkeys('enter', handleConfirm, { enabled: isModalOpen && !isPending, preventDefault: true })
-  useHotkeys('escape', handleCancel, { enabled: isModalOpen })
+  const { enableScope, disableScope } = useHotkeysContext()
+
+  useEffect(() => {
+    if (isModalOpen) {
+      enableScope(HotkeyScope.MODAL)
+    } else {
+      disableScope(HotkeyScope.MODAL)
+    }
+  }, [isModalOpen, enableScope, disableScope])
+
+  useHotkeys('enter', handleConfirm, {
+    scopes: [HotkeyScope.MODAL],
+    enabled: isModalOpen && !isPending,
+    preventDefault: true,
+  })
+  useHotkeys('escape', handleCancel, { scopes: [HotkeyScope.MODAL], enabled: isModalOpen })
 
   return {
     control,
