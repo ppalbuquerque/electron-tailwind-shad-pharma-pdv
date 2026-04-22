@@ -171,6 +171,10 @@ Exemplos rápidos:
 - Inputs de formulário → `components/ui/` (Input, Select, MoneyInput, etc.)
 - Par chave-valor → `<BoxValue />` (`components/ui/box-value`)
 
+### Execução de Planos
+
+Sempre que for executar um plano de implementação (após o planejamento estar aprovado), passe o controle para o subagent `frontend-implementer` usando a ferramenta `Agent`. O subagent deve receber o plano completo como contexto e executar cada task sequencialmente, marcando-as como concluídas.
+
 ### Planejamento
 
 Sempre que criar um plano de implementação:
