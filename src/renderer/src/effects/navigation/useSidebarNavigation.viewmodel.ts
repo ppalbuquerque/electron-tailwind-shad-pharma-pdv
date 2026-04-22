@@ -1,19 +1,23 @@
 import { MutableRefObject } from 'react'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useRouterState } from '@tanstack/react-router'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { HotkeyScope } from '@/lib/hotkey-scopes'
+import { sidebarRoutes } from '@/lib/sidebar-routes'
 
 interface UseSidebarNavigationParams {
   linkRefs: MutableRefObject<HTMLAnchorElement[]>
   currentLinkFocused: MutableRefObject<number>
+  triggerContentFocus: () => void
 }
 
 function useSidebarNavigationViewModel({
   linkRefs,
   currentLinkFocused,
+  triggerContentFocus,
 }: UseSidebarNavigationParams): void {
   const navigate = useNavigate()
+  const { location } = useRouterState()
 
   useHotkeys('f1', () => navigate({ to: '/' }), { scopes: [HotkeyScope.SIDEBAR], preventDefault: true })
   useHotkeys('f2', () => navigate({ to: '/checkout/open' }), {
@@ -40,6 +44,21 @@ function useSidebarNavigationViewModel({
     scopes: [HotkeyScope.SIDEBAR],
     preventDefault: true,
   })
+
+  useHotkeys(
+    'enter',
+    () => {
+      const focusedRoute = sidebarRoutes[currentLinkFocused.current]
+      if (!focusedRoute) return
+
+      if (focusedRoute.url === location.pathname) {
+        triggerContentFocus()
+      } else {
+        navigate({ to: focusedRoute.url })
+      }
+    },
+    { scopes: [HotkeyScope.SIDEBAR], preventDefault: true },
+  )
 
   useHotkeys(
     'ArrowDown',

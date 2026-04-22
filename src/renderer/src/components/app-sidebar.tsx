@@ -1,13 +1,5 @@
-import { useRef, ReactNode, ComponentProps, useEffect } from 'react'
-import {
-  BriefcaseMedical,
-  House,
-  ShoppingCart,
-  BanknoteArrowUp,
-  NotebookText,
-  List,
-  BaggageClaim,
-} from 'lucide-react'
+import { ReactNode, ComponentProps, useEffect } from 'react'
+import { BriefcaseMedical } from 'lucide-react'
 import { Link, useLocation } from '@tanstack/react-router'
 import { useHotkeysContext } from 'react-hotkeys-hook'
 
@@ -26,64 +18,20 @@ import {
 import { SidebarButton } from '@/components/layout/sidebar-button'
 import { HotkeyScope } from '@/lib/hotkey-scopes'
 import { useSidebarNavigationViewModel } from '@/effects/navigation/useSidebarNavigation.viewmodel'
-
-const routes = [
-  {
-    title: 'Tela inicial',
-    icon: House,
-    url: '/',
-    hotkey: 'F1',
-  },
-  {
-    title: 'Abrir Caixa',
-    url: '/checkout/open',
-    icon: ShoppingCart,
-    hotkey: 'F2',
-  },
-  {
-    title: 'Venda',
-    icon: BanknoteArrowUp,
-    url: '/orders/create',
-    hotkey: 'F3',
-  },
-  {
-    title: 'Situação do Caixa',
-    icon: NotebookText,
-    url: '/checkout/resume',
-    hotkey: 'F4',
-  },
-  {
-    title: 'Lista de Vendas',
-    icon: List,
-    url: '/orders/list',
-    hotkey: 'F5',
-  },
-  {
-    title: 'Fechar Caixa',
-    icon: BaggageClaim,
-    url: '/checkout/close',
-    hotkey: 'F6',
-  },
-  {
-    title: 'Medicamentos',
-    icon: BriefcaseMedical,
-    url: '/medication/list',
-    hotkey: 'F7',
-  },
-]
+import { sidebarRoutes } from '@/lib/sidebar-routes'
+import { useSidebarNavigationContext } from '@/contexts/navigation/sidebar-navigation.context'
 
 export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>): ReactNode {
-  const linkRefs = useRef<HTMLAnchorElement[]>([])
-  const currentLinkFocused = useRef(0)
+  const { linkRefs, currentLinkFocused, triggerContentFocus } = useSidebarNavigationContext()
   const location = useLocation()
   const { enableScope, disableScope } = useHotkeysContext()
 
-  useSidebarNavigationViewModel({ linkRefs, currentLinkFocused })
+  useSidebarNavigationViewModel({ linkRefs, currentLinkFocused, triggerContentFocus })
 
   useEffect(() => {
     const { pathname } = location
 
-    const currentRouteIndex = routes.findIndex((route) => route.url === pathname)
+    const currentRouteIndex = sidebarRoutes.findIndex((route) => route.url === pathname)
 
     linkRefs.current[currentRouteIndex]?.focus()
   }, [location])
@@ -119,8 +67,13 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>): ReactN
           <SidebarGroupLabel>Navegação</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {routes.map((item, index) => (
-                <Link to={item.url} key={item.title} ref={(el) => (linkRefs.current[index] = el)}>
+              {sidebarRoutes.map((item, index) => (
+                <Link
+                  to={item.url}
+                  key={item.title}
+                  ref={(el) => (linkRefs.current[index] = el)}
+                  className="group focus:outline-none"
+                >
                   {({ isActive }) => (
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>

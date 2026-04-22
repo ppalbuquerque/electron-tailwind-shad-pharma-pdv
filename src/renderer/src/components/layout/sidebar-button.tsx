@@ -11,14 +11,17 @@ type SidebarButtonProps = {
   icon: IconProps
 }
 
-const sidebarButtonVariants = cva('mb-[8px] border-l-4 rounded-lg border-black', {
-  variants: {
-    variant: {
-      active: 'bg-emerald-500 text-white font-bold',
-      default: 'bg-gray-100'
+const sidebarButtonVariants = cva(
+  'mb-[8px] border-l-4 rounded-lg border-black group-focus:bg-emerald-100',
+  {
+    variants: {
+      variant: {
+        active: 'bg-emerald-500 text-white font-bold',
+        default: 'bg-gray-100'
+      }
     }
   }
-})
+)
 
 function SidebarButton({
   title,
