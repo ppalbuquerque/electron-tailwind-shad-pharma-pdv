@@ -11,6 +11,7 @@ import { getPageTitleByPath, RoutesPath } from '@renderer/lib/get-page-title-by-
 import { CheckoutService } from '@/services/checkout.service'
 import { CHECKOUT_QUERY_KEYS } from '@/services/checkout/checkout.query.keys'
 import { HotkeyScope } from '@/lib/hotkey-scopes'
+import { SidebarNavigationProvider } from '@/contexts/navigation/sidebar-navigation.context'
 
 function ContentArea(): ReactNode {
   const { enableScope, disableScope } = useHotkeysContext()
@@ -37,13 +38,15 @@ const RootLaytout = (): ReactNode => {
   })
 
   return (
-    <HotkeysProvider initiallyActiveScopes={[HotkeyScope.SIDEBAR, HotkeyScope.CONTENT]}>
-      <SidebarProvider>
-        <AppSidebar />
-        <ContentArea />
-        <TanStackRouterDevtools />
-      </SidebarProvider>
-    </HotkeysProvider>
+    <SidebarNavigationProvider>
+      <HotkeysProvider initiallyActiveScopes={[HotkeyScope.SIDEBAR, HotkeyScope.CONTENT]}>
+        <SidebarProvider>
+          <AppSidebar />
+          <ContentArea />
+          <TanStackRouterDevtools />
+        </SidebarProvider>
+      </HotkeysProvider>
+    </SidebarNavigationProvider>
   )
 }
 
