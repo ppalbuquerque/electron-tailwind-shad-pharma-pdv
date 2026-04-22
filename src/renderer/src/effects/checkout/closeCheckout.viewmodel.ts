@@ -5,8 +5,9 @@ import { toast } from 'sonner'
 import { Control, useForm } from 'react-hook-form'
 import { useHotkeys } from 'react-hotkeys-hook'
 
-import { CheckoutService, CheckoutStatusResponse } from '@/services/checkout.service'
+import { CheckoutService } from '@/services/checkout.service'
 import { CHECKOUT_QUERY_KEYS } from '@/services/checkout/checkout.query.keys'
+import { useCheckoutStatus } from '@/effects/checkout/useCheckoutStatus'
 
 interface CloseCheckoutForm {
   closingValue: number
@@ -33,10 +34,7 @@ function useCloseCheckoutViewModel(): CloseCheckoutViewModel {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const { data: checkoutStatus } = useQuery({
-    queryKey: [CHECKOUT_QUERY_KEYS.STATUS],
-    queryFn: CheckoutService.getCheckoutStatus
-  })
+  const checkoutStatus = useCheckoutStatus()
 
   const { data: checkoutResume } = useQuery({
     queryKey: [CHECKOUT_QUERY_KEYS.RESUME],
@@ -78,9 +76,7 @@ function useCloseCheckoutViewModel(): CloseCheckoutViewModel {
     if (!checkoutStatus?.id) return
     try {
       await closeCheckoutMutation({ checkoutId: checkoutStatus.id, closingValue })
-      queryClient.setQueryData<CheckoutStatusResponse>([CHECKOUT_QUERY_KEYS.STATUS], (prev) =>
-        prev ? { ...prev, isOpen: false } : prev
-      )
+      await queryClient.invalidateQueries({ queryKey: [CHECKOUT_QUERY_KEYS.STATUS] })
       setIsModalOpen(false)
       toast.success('Caixa fechado com sucesso')
       setTimeout(() => {

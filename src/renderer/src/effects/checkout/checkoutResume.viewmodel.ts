@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { CheckoutService } from '@/services/checkout.service'
 import { CHECKOUT_QUERY_KEYS } from '@/services/checkout/checkout.query.keys'
-import { CheckoutStatusResponse } from '@/services/checkout.service'
+import { useCheckoutStatus } from '@/effects/checkout/useCheckoutStatus'
 
 interface CheckoutResumeViewModel {
   isCheckoutOpen: boolean
@@ -16,11 +16,7 @@ interface CheckoutResumeViewModel {
 }
 
 function useCheckoutResumeViewModel(): CheckoutResumeViewModel {
-  const queryClient = useQueryClient()
-
-  const checkoutStatus = queryClient.getQueryData<CheckoutStatusResponse>([
-    CHECKOUT_QUERY_KEYS.STATUS
-  ])
+  const checkoutStatus = useCheckoutStatus()
   const isCheckoutOpen = checkoutStatus?.isOpen ?? false
 
   const {
