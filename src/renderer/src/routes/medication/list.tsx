@@ -16,7 +16,8 @@ function ListMedicationsPage(): ReactNode {
     goToNextPage,
     goToPrevPage,
     register,
-    handleSearchSubmit
+    handleSearchSubmit,
+    tableRef
   } = useListMedicationsViewModel()
   const navigate = useNavigate()
 
@@ -41,13 +42,16 @@ function ListMedicationsPage(): ReactNode {
         </div>
 
         <DataTable
+          tableRef={tableRef}
           columns={listMedicationsColumns}
           data={medications}
           isLoading={isLoading}
           loadingMessage="Carregando medicamentos..."
           emptyMessage="Nenhum medicamento encontrado"
           getRowClassName={(row) => (row.stockAvailability <= 0 ? 'bg-red-100 text-red-800' : '')}
-          onConfirmSelection={(row) => navigate({ to: '/medication/$id', params: { id: String(row.id) } })}
+          onConfirmSelection={(row) =>
+            navigate({ to: '/medication/$id', params: { id: String(row.id) } })
+          }
         />
 
         <div className="flex items-center justify-between">
