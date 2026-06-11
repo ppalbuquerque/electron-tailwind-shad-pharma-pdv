@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import type { RefObject } from 'react'
 import {
   ShoppingCart,
   BanknoteArrowUp,
@@ -8,8 +9,12 @@ import {
   BriefcaseMedical,
   LucideIcon
 } from 'lucide-react'
+import { useHotkeys } from 'react-hotkeys-hook'
+import { useRouter } from '@tanstack/react-router'
 
 import { useCheckoutStatus } from '@/effects/checkout/useCheckoutStatus'
+import { HotkeyScope } from '@/lib/hotkey-scopes'
+import { useSidebarNavigationContext } from '@/contexts/navigation/sidebar-navigation.context'
 
 interface HomeShortcut {
   title: string
@@ -22,11 +27,17 @@ interface HomeShortcut {
 interface HomeViewModel {
   currentDateTime: Date
   shortcuts: HomeShortcut[]
+  focusedIndex: number
+  contentAreaRef: RefObject<HTMLDivElement | null>
 }
 
 function useHomeViewModel(): HomeViewModel {
   const [currentDateTime, setCurrentDateTime] = useState<Date>(new Date())
+  const [focusedIndex, setFocusedIndex] = useState(-1)
+  const contentAreaRef = useRef<HTMLDivElement>(null)
 
+  const router = useRouter()
+  const { focusByPath, registerContentFocus } = useSidebarNavigationContext()
   const checkoutStatus = useCheckoutStatus()
   const isCheckoutOpen = checkoutStatus?.isOpen ?? false
 
@@ -37,6 +48,14 @@ function useHomeViewModel(): HomeViewModel {
 
     return () => clearInterval(interval)
   }, [])
+
+  useEffect(() => {
+    registerContentFocus(() => {
+      setFocusedIndex(0)
+      contentAreaRef.current?.focus()
+    })
+    return () => registerContentFocus(null)
+  }, [registerContentFocus])
 
   const shortcuts: HomeShortcut[] = [
     {
@@ -83,7 +102,37 @@ function useHomeViewModel(): HomeViewModel {
     }
   ]
 
-  return { currentDateTime, shortcuts }
+  useHotkeys(
+    ['ArrowRight', 'ArrowDown'],
+    () => setFocusedIndex((i) => Math.min(i + 1, shortcuts.length - 1)),
+    { scopes: [HotkeyScope.CONTENT], enabled: focusedIndex >= 0, preventDefault: true }
+  )
+
+  useHotkeys(['ArrowLeft', 'ArrowUp'], () => setFocusedIndex((i) => Math.max(i - 1, 0)), {
+    scopes: [HotkeyScope.CONTENT],
+    enabled: focusedIndex >= 0,
+    preventDefault: true
+  })
+
+  useHotkeys(
+    'enter',
+    () => {
+      const target = shortcuts[focusedIndex]
+      if (target && !target.disabled) router.navigate({ to: target.url })
+    },
+    { scopes: [HotkeyScope.CONTENT], enabled: focusedIndex >= 0, preventDefault: true }
+  )
+
+  useHotkeys(
+    'escape',
+    () => {
+      setFocusedIndex(-1)
+      focusByPath('/')
+    },
+    { scopes: [HotkeyScope.CONTENT], enableOnFormTags: true, preventDefault: true }
+  )
+
+  return { currentDateTime, shortcuts, focusedIndex, contentAreaRef }
 }
 
 export { useHomeViewModel }
