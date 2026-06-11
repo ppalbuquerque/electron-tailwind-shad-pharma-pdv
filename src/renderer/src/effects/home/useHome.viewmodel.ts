@@ -50,6 +50,11 @@ function useHomeViewModel(): HomeViewModel {
   }, [])
 
   useEffect(() => {
+    setFocusedIndex(0)
+    contentAreaRef.current?.focus()
+  }, [])
+
+  useEffect(() => {
     registerContentFocus(() => {
       setFocusedIndex(0)
       contentAreaRef.current?.focus()
