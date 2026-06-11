@@ -209,6 +209,7 @@ interface OpenCheckoutViewModel {
   control: Control<OpenCheckoutForm>
   isLoading: boolean
   onSubmit: () => Promise<void>
+  initialValueInputRef: RefObject<HTMLInputElement>
 }
 ```
 
@@ -218,6 +219,8 @@ interface OpenCheckoutViewModel {
 - Em caso de sucesso: exibe toast `'Caixa aberto com sucesso'` e navega para `/orders/create`
 - Em caso de erro: exibe toast `'Error ao abrir o caixa'`
 - Expõe `isLoading` (derivado de `isPending`) para desabilitar o botão durante a requisição
+- `initialValueInputRef` — ref do `MoneyInput`; foco automático ao montar e registrado em `SidebarNavigationContext` para ser restaurado quando `Enter` é pressionado na sidebar
+- Hotkey `Esc` (escopo `CONTENT`, `enableOnFormTags: true`) → `focusByPath('/checkout/open')` — transfere foco para o botão "Abrir Caixa" na sidebar
 
 ---
 
@@ -321,11 +324,19 @@ Badge visual que indica o estado atual do caixa. Componente de layout — não p
 ```
 
 #### Comportamento
-- Foco automático no `MoneyInput` ao montar (via `useRef` + `useEffect`)
+- Foco automático no `MoneyInput` ao montar (via `initialValueInputRef` retornado pelo viewmodel)
 - Input controlado via `Controller` (react-hook-form) ligado ao `MoneyInput`
 - Botão "Confirmar" desabilitado durante a requisição (`isLoading`)
 - Spinner exibido no botão durante loading
 - Após sucesso navega automaticamente para `/orders/create`
+- Botão "Cancelar" removido da UI
+
+#### Navegação por Teclado
+
+| Tecla | Ação |
+|-------|------|
+| `Esc` | Transfere o foco para a sidebar (escopo `SIDEBAR`), focando no botão "Abrir Caixa" via `focusByPath('/checkout/open')` |
+| `Enter` (na sidebar) | Retorna o foco para o `MoneyInput` na ContentArea via `triggerContentFocus` |
 
 ---
 

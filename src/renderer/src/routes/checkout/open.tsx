@@ -1,4 +1,4 @@
-import { ReactNode, useRef, useEffect } from 'react'
+import { ReactNode } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { ShoppingCart, InfoIcon } from 'lucide-react'
 import { Controller } from 'react-hook-form'
@@ -10,17 +10,11 @@ import { useOpenCheckoutViewModel } from '@/effects/checkout/openCheckout.viewmo
 import { Spinner } from '@/components/ui/spinner'
 
 export const Route = createFileRoute('/checkout/open')({
-  component: OpenCheckout
+  component: OpenCheckout,
 })
 
 function OpenCheckout(): ReactNode {
-  const { control, onSubmit, isLoading } = useOpenCheckoutViewModel()
-
-  const initialValueInputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    initialValueInputRef.current?.focus()
-  }, [])
+  const { control, onSubmit, isLoading, initialValueInputRef } = useOpenCheckoutViewModel()
 
   return (
     <div className="flex flex-col mt-8 items-center">
@@ -48,11 +42,8 @@ function OpenCheckout(): ReactNode {
                 />
               )}
             />
-            <div className="mt-4 flex justify-between w-full">
-              <Button variant={'destructive'} className="flex-1 mr-2">
-                Cancelar (ESC)
-              </Button>
-              <Button className="flex-1" disabled={isLoading}>
+            <div className="mt-4 w-full">
+              <Button className="w-full" disabled={isLoading}>
                 {isLoading && <Spinner />}
                 Confirmar (Enter)
               </Button>

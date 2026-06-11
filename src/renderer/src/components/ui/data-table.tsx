@@ -9,7 +9,9 @@ import {
 } from '@tanstack/react-table'
 import { ReactNode } from 'react'
 import { cva } from 'class-variance-authority'
-import { useHotkeys } from 'react-hotkeys-hook'
+import { useHotkeys, useHotkeysContext } from 'react-hotkeys-hook'
+
+import { HotkeyScope } from '@/lib/hotkey-scopes'
 import { CircleOff } from 'lucide-react'
 
 import {
@@ -75,6 +77,7 @@ export function DataTable<TData, TValue>({
   })
 
   const isTableEmpty = !isLoading && data.length === 0
+  const { enableScope, disableScope } = useHotkeysContext()
 
   useHotkeys(
     'ArrowDown',
@@ -89,7 +92,7 @@ export function DataTable<TData, TValue>({
         setRowSelection({ [rows[nextIndex].id]: true })
       }
     },
-    { enableOnFormTags: true }
+    { scopes: [HotkeyScope.TABLE], enableOnFormTags: true },
   )
 
   useHotkeys(
@@ -105,7 +108,7 @@ export function DataTable<TData, TValue>({
         setRowSelection({ [rows[nextIndex].id]: true })
       }
     },
-    { enableOnFormTags: true }
+    { scopes: [HotkeyScope.TABLE], enableOnFormTags: true },
   )
 
   useHotkeys(
@@ -120,22 +123,31 @@ export function DataTable<TData, TValue>({
         onConfirmSelection(selectedRow.original)
       }
     },
-    { enableOnFormTags: true }
+    { scopes: [HotkeyScope.TABLE], enableOnFormTags: true },
   )
 
-  useHotkeys('backspace', () => {
-    const rows = table.getRowModel().rows
+  useHotkeys(
+    'backspace',
+    () => {
+      const rows = table.getRowModel().rows
 
-    const currentIndex = getCurrentIndex(rows, rowSelection)
-    const selectedRow = rows[currentIndex]
+      const currentIndex = getCurrentIndex(rows, rowSelection)
+      const selectedRow = rows[currentIndex]
 
-    if (onDeleteSelection) {
-      onDeleteSelection(selectedRow.original)
-    }
-  })
+      if (onDeleteSelection) {
+        onDeleteSelection(selectedRow.original)
+      }
+    },
+    { scopes: [HotkeyScope.TABLE] },
+  )
 
   return (
-    <div className="overflow-hidden rounded-md border">
+    <div
+      className="overflow-hidden rounded-md border"
+      tabIndex={0}
+      onFocus={() => enableScope(HotkeyScope.TABLE)}
+      onBlur={() => disableScope(HotkeyScope.TABLE)}
+    >
       <Table className="text-black">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

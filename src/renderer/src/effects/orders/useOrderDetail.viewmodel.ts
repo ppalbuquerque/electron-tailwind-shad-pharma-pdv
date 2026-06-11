@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate, useRouter } from '@tanstack/react-router'
 import { useHotkeys } from 'react-hotkeys-hook'
+
+import { HotkeyScope } from '@/lib/hotkey-scopes'
 import { toast } from 'sonner'
 
 import { OrderDetail } from '@/services/orders/orders.dto'
@@ -24,7 +26,10 @@ export function useOrderDetailViewModel(id: string): OrderDetailViewModel {
   const router = useRouter()
   const queryClient = useQueryClient()
 
-  useHotkeys('esc', () => navigate({ to: '/orders/list' }), { preventDefault: true })
+  useHotkeys('esc', () => navigate({ to: '/orders/list' }), {
+    scopes: [HotkeyScope.CONTENT],
+    preventDefault: true,
+  })
 
   const { data: order, isLoading } = useQuery({
     queryKey: [ORDERS_QUERY_KEYS.GET_ORDER_BY_ID, id],

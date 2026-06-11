@@ -8,7 +8,13 @@ export const Route = createFileRoute('/')({
   component: Index
 })
 
-function ShortcutCard({ shortcut }: { shortcut: HomeShortcut }): ReactNode {
+function ShortcutCard({
+  shortcut,
+  isFocused
+}: {
+  shortcut: HomeShortcut
+  isFocused: boolean
+}): ReactNode {
   const { title, icon: Icon, url, hotkey, disabled } = shortcut
 
   const cardContent = (
@@ -18,13 +24,19 @@ function ShortcutCard({ shortcut }: { shortcut: HomeShortcut }): ReactNode {
         'transition-all duration-200 select-none',
         disabled
           ? 'border-slate-200 bg-slate-50 opacity-40 cursor-not-allowed'
-          : 'border-slate-200 bg-white cursor-pointer hover:border-emerald-400 hover:bg-emerald-50 hover:shadow-md active:scale-[0.98]'
+          : isFocused
+            ? 'border-emerald-500 bg-emerald-500 cursor-pointer shadow-md'
+            : 'border-slate-200 bg-white cursor-pointer hover:border-emerald-400 hover:bg-emerald-50 hover:shadow-md active:scale-[0.98]'
       ].join(' ')}
     >
       <span
         className={[
           'absolute top-3 right-3 rounded px-1.5 py-0.5 font-mono text-xs font-semibold',
-          disabled ? 'bg-slate-100 text-slate-400' : 'bg-slate-100 text-slate-500'
+          disabled
+            ? 'bg-slate-100 text-slate-400'
+            : isFocused
+              ? 'bg-emerald-400 text-white'
+              : 'bg-slate-100 text-slate-500'
         ].join(' ')}
       >
         {hotkey}
@@ -35,7 +47,9 @@ function ShortcutCard({ shortcut }: { shortcut: HomeShortcut }): ReactNode {
           'flex size-16 items-center justify-center rounded-xl transition-colors duration-200',
           disabled
             ? 'bg-slate-100 text-slate-400'
-            : 'bg-slate-100 text-slate-600 group-hover:bg-emerald-100 group-hover:text-emerald-700'
+            : isFocused
+              ? 'bg-emerald-400 text-white'
+              : 'bg-slate-100 text-slate-600 group-hover:bg-emerald-100 group-hover:text-emerald-700'
         ].join(' ')}
       >
         <Icon size={32} strokeWidth={1.5} />
@@ -44,7 +58,11 @@ function ShortcutCard({ shortcut }: { shortcut: HomeShortcut }): ReactNode {
       <span
         className={[
           'text-center text-sm font-semibold leading-tight',
-          disabled ? 'text-slate-400' : 'text-slate-700 group-hover:text-emerald-800'
+          disabled
+            ? 'text-slate-400'
+            : isFocused
+              ? 'text-white'
+              : 'text-slate-700 group-hover:text-emerald-800'
         ].join(' ')}
       >
         {title}
@@ -64,7 +82,7 @@ function ShortcutCard({ shortcut }: { shortcut: HomeShortcut }): ReactNode {
 }
 
 function Index(): ReactNode {
-  const { currentDateTime, shortcuts } = useHomeViewModel()
+  const { currentDateTime, shortcuts, focusedIndex, contentAreaRef } = useHomeViewModel()
 
   const formattedDate = currentDateTime.toLocaleDateString('pt-BR', {
     day: '2-digit',
@@ -98,9 +116,13 @@ function Index(): ReactNode {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
-          {shortcuts.map((shortcut) => (
-            <ShortcutCard key={shortcut.url} shortcut={shortcut} />
+        <div ref={contentAreaRef} tabIndex={-1} className="grid grid-cols-3 gap-4 outline-none">
+          {shortcuts.map((shortcut, index) => (
+            <ShortcutCard
+              key={shortcut.url}
+              shortcut={shortcut}
+              isFocused={index === focusedIndex}
+            />
           ))}
         </div>
       </div>

@@ -1,9 +1,10 @@
 import { useEffect } from 'react'
 import { Control, SubmitHandler, useForm } from 'react-hook-form'
-import { useHotkeys } from 'react-hotkeys-hook'
+import { useHotkeys, useHotkeysContext } from 'react-hotkeys-hook'
 import { toast } from 'sonner'
 
 import { formatMoney } from '@/utils/format-money'
+import { HotkeyScope } from '@/lib/hotkey-scopes'
 
 interface CloseOrderSectionForm {
   paymentValue: number
@@ -19,15 +20,23 @@ interface CloseOrderSectionViewModel {
 function useCloseOrderSectionViewModel(
   orderTotalRaw: number,
   isLoading: boolean,
-  onConfirm: (paymentValue: number) => void
+  onConfirm: (paymentValue: number) => void,
+  onCancel: () => void,
 ): CloseOrderSectionViewModel {
   const { handleSubmit, control, watch, setFocus } = useForm<CloseOrderSectionForm>({
-    defaultValues: { paymentValue: 0 }
+    defaultValues: { paymentValue: 0 },
   })
+
+  const { enableScope, disableScope } = useHotkeysContext()
 
   useEffect(() => {
     setFocus('paymentValue')
   }, [setFocus])
+
+  useEffect(() => {
+    enableScope(HotkeyScope.FORM)
+    return () => disableScope(HotkeyScope.FORM)
+  }, [enableScope, disableScope])
 
   const paymentValue = watch('paymentValue') ?? 0
 
@@ -46,21 +55,29 @@ function useCloseOrderSectionViewModel(
     validateAndConfirm(data.paymentValue)
   }
 
+  useHotkeys('esc', onCancel, {
+    scopes: [HotkeyScope.FORM],
+    enableOnFormTags: true,
+  })
+
   useHotkeys(
-    'esc',
+    'enter',
     () => {
-      if (isLoading) return
-      handleSubmit(onCloseOrderSubmit)()
+      if (!isLoading) handleSubmit(onCloseOrderSubmit)()
     },
-    { enableOnFormTags: true },
-    [isLoading]
+    {
+      scopes: [HotkeyScope.FORM],
+      enableOnFormTags: true,
+      preventDefault: true,
+    },
+    [isLoading],
   )
 
   return {
     control,
     onSubmit: handleSubmit(onCloseOrderSubmit),
     displayPaymentValue,
-    change
+    change,
   }
 }
 
