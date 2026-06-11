@@ -135,6 +135,10 @@ src/renderer/src/
 
 ## 4. Tipos
 
+> **Valores monetários:** todos os campos monetários (`subtotal`, `orderTotalRaw`, `totalValue`) são **inteiros em centavos** (ex: `4800` = R$ 48,00). Para exibição, use `formatMoneyFromCents(value)` de `@/utils/format-money`. Nunca passe um valor em centavos para `formatMoney()` diretamente.
+
+
+
 ```typescript
 interface CreateOrderDTO {
   paymentValue: number

@@ -74,6 +74,10 @@ interface CreateOrderDTO {
 }
 ```
 
+### Valores Monetários
+
+**Regra:** todos os valores monetários no sistema são **inteiros em centavos** (ex: `4800` = R$ 48,00). Para exibição, use sempre `formatMoneyFromCents(value)` de `@/utils/format-money`. Nunca passe um valor em centavos diretamente para `formatMoney()`.
+
 ### Keyboard Navigation
 
 The app is keyboard-driven (POS context):
