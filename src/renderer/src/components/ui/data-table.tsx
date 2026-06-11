@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import type { RefObject } from 'react'
 import {
   ColumnDef,
   flexRender,
@@ -35,6 +36,7 @@ interface DataTableProps<TData, TValue> {
   onConfirmSelection?: (row: TData) => void
   onDeleteSelection?: (row: TData) => void
   getRowClassName?: (row: TData) => string
+  tableRef?: RefObject<HTMLDivElement | null>
 }
 
 const rowVariants = cva('', {
@@ -61,7 +63,8 @@ export function DataTable<TData, TValue>({
   emptyMessage = 'Nenhum resultado encontrado',
   onConfirmSelection,
   onDeleteSelection,
-  getRowClassName
+  getRowClassName,
+  tableRef
 }: DataTableProps<TData, TValue>): ReactNode {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const table = useReactTable({
@@ -143,6 +146,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div
+      ref={tableRef}
       className="overflow-hidden rounded-md border"
       tabIndex={0}
       onFocus={() => enableScope(HotkeyScope.TABLE)}
