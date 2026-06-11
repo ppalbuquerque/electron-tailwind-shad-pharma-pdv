@@ -1,6 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table'
 
 import { OrderItem } from '@/types/orderItem'
+import { formatMoneyFromCents } from '@/utils/format-money'
 
 export const columns: ColumnDef<OrderItem>[] = [
   {
@@ -12,12 +13,7 @@ export const columns: ColumnDef<OrderItem>[] = [
     header: () => <div>Valor</div>,
     cell: ({ row }) => {
       const subtotal: number = row.getValue('subtotal')
-      const formatted = new Intl.NumberFormat('pt-Br', {
-        style: 'currency',
-        currency: 'BRL'
-      }).format(subtotal)
-
-      return <div>{formatted}</div>
+      return <div>{formatMoneyFromCents(subtotal)}</div>
     }
   },
   {
