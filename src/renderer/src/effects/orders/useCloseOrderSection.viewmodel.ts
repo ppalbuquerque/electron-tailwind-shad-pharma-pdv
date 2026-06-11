@@ -3,7 +3,7 @@ import { Control, SubmitHandler, useForm } from 'react-hook-form'
 import { useHotkeys, useHotkeysContext } from 'react-hotkeys-hook'
 import { toast } from 'sonner'
 
-import { formatMoney } from '@/utils/format-money'
+import { formatMoneyFromCents } from '@/utils/format-money'
 import { HotkeyScope } from '@/lib/hotkey-scopes'
 
 interface CloseOrderSectionForm {
@@ -39,16 +39,18 @@ function useCloseOrderSectionViewModel(
   }, [enableScope, disableScope])
 
   const paymentValue = watch('paymentValue') ?? 0
+  const paymentValueCents = Math.round(paymentValue * 100)
 
-  const displayPaymentValue = formatMoney(paymentValue)
-  const change = formatMoney(Math.max(0, paymentValue - orderTotalRaw))
+  const displayPaymentValue = formatMoneyFromCents(paymentValueCents)
+  const change = formatMoneyFromCents(Math.max(0, paymentValueCents - orderTotalRaw))
 
   const validateAndConfirm = (value: number): void => {
-    if (value <= orderTotalRaw) {
+    const valueCents = Math.round(value * 100)
+    if (valueCents <= orderTotalRaw) {
       toast.error('O valor informado é insuficiente para cobrir o total da venda')
       return
     }
-    onConfirm(value)
+    onConfirm(valueCents)
   }
 
   const onCloseOrderSubmit: SubmitHandler<CloseOrderSectionForm> = (data) => {
