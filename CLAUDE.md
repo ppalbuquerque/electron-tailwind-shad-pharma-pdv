@@ -206,3 +206,9 @@ Os arquivos em `docs/` devem refletir sempre o estado atual do código:
 | `docs/keyboard-navigation-audit.md` | Hotkeys são adicionadas, removidas ou alteradas; escopos mudam; conflitos são resolvidos |
 
 A atualização da documentação deve entrar como **task explícita no planejamento**, não como etapa implícita.
+
+### Escrita e Atualização de Documentação
+
+Sempre que for escrever ou atualizar qualquer arquivo em `docs/`, passe o controle para um subagent utilizando a skill `doc-module` via a ferramenta `Skill`. Nunca escreva ou edite arquivos de documentação diretamente — delegue ao subagent com a skill carregada.
+
+Adicione `docs/application-module.md` à tabela acima sempre que alterar comportamento global da aplicação (janela, navegação raiz, arquitetura de processos).
