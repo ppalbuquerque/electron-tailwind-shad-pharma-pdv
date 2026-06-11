@@ -10,6 +10,7 @@ import { Medication } from '@/types/medication'
 import { OrderItem } from '@/types/orderItem'
 
 import { useCreateOrder } from '@/contexts/create-order/create-order.context'
+import { useSidebarNavigationContext } from '@/contexts/navigation/sidebar-navigation.context'
 
 import { OrdersService } from '@/services/orders/orders.service'
 import { CreateOrderDTO } from '@/services/orders/orders.dto'
@@ -41,6 +42,7 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
   const [searchValue, setSearchValue] = useState('')
   const [isClosingOrder, setIsClosingOrder] = useState(false)
   const { dispatch, state } = useCreateOrder()
+  const { focusByPath } = useSidebarNavigationContext()
 
   useEffect(() => {
     if (state.selectedMedication === undefined) {
@@ -118,11 +120,21 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     },
   )
 
-  useHotkeys('esc', handleOpenCloseOrder, {
-    scopes: [HotkeyScope.CONTENT],
-    enabled: !searchMedicationDialogIsOpen && !isClosingOrder,
-    enableOnFormTags: true,
-  })
+  useHotkeys(
+    'esc',
+    () => {
+      if (state.items.length === 0) {
+        focusByPath('/orders/create')
+      } else {
+        handleOpenCloseOrder()
+      }
+    },
+    {
+      scopes: [HotkeyScope.CONTENT],
+      enabled: !searchMedicationDialogIsOpen && !isClosingOrder,
+      enableOnFormTags: true,
+    },
+  )
 
   return {
     searchMedicationDialogIsOpen,
