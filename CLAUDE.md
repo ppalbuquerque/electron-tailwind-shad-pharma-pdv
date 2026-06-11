@@ -82,6 +82,8 @@ The app is keyboard-driven (POS context):
 - **Enter**: Submit forms / advance focus between inputs
 - **Esc**: Close dialogs
 
+**Regra:** sempre que um plano de implementação envolver mudanças em navegação por teclado (hotkeys, escopos, foco, `useHotkeys`), consulte `docs/keyboard-navigation-audit.md` como fonte de verdade antes de planejar. Esse documento contém o mapeamento completo de hotkeys por fluxo, conflitos identificados, escopos existentes e a estratégia de refatoração sugerida. Não leia a codebase para entender o estado atual — leia o documento primeiro.
+
 ### ViewModel — Responsabilidades
 
 Todo o código de comportamento de um componente deve residir no viewmodel, nunca no componente:
@@ -197,5 +199,6 @@ Os arquivos em `docs/` devem refletir sempre o estado atual do código:
 | `docs/api-reference.md` | Contratos de endpoint mudam (request, response, params) |
 | `docs/components.md` | Um componente reutilizável é criado, alterado ou tem novos props |
 | `docs/medication-module.md` | Tipos, endpoints, comportamento ou arquivos do módulo mudam |
+| `docs/keyboard-navigation-audit.md` | Hotkeys são adicionadas, removidas ou alteradas; escopos mudam; conflitos são resolvidos |
 
 A atualização da documentação deve entrar como **task explícita no planejamento**, não como etapa implícita.

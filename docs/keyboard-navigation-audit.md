@@ -131,11 +131,25 @@ Usado em: `/orders/list`, `/medication/list`, `/orders/detail`, `/medication/$id
 |-------|------|
 | Esc | Volta para `/medication/list` |
 
-### 2.6 Rotas sem hotkeys implementadas
+### 2.6 Fluxo: Home (`/`) — Navegação nos ShortcutCards
+
+**Arquivo:** `effects/home/useHome.viewmodel.ts`
+
+Escopo: `CONTENT`
+
+| Tecla | Ação | Condição |
+|-------|------|----------|
+| ArrowRight / ArrowDown | Avança foco para o próximo ShortcutCard | `focusedIndex >= 0` |
+| ArrowLeft / ArrowUp | Recua foco para o ShortcutCard anterior | `focusedIndex >= 0` |
+| Enter | Navega para a URL do card focado (se não desabilitado) | `focusedIndex >= 0` |
+| Escape | Limpa seleção e devolve foco à sidebar via `focusByPath('/')` | sempre ativo no escopo CONTENT |
+
+**Entrada de foco:** via `registerContentFocus` — ao pressionar Enter no link da sidebar para `/`, `focusedIndex` é definido como `0` e o grid recebe foco DOM (`contentAreaRef.current?.focus()`).
+
+### 2.7 Rotas sem hotkeys implementadas
 
 | Rota | Viewmodel | Status |
 |------|-----------|--------|
-| `/` | `useHome.viewmodel.ts` | Sem hotkeys |
 | `/checkout/open` | `openCheckout.viewmodel.ts` | Sem hotkeys |
 | `/checkout/resume` | `checkoutResume.viewmodel.ts` | Sem hotkeys |
 | `/medication/create` | — | Sem hotkeys |
