@@ -1,6 +1,6 @@
 # Auditoria de Navegação por Teclado
 
-> Gerado em: 2026-04-21
+> Gerado em: 2026-04-21 | Última atualização: 2026-06-11
 
 ---
 
@@ -115,6 +115,8 @@ Bem implementado — isolamento condicional correto.
 | Enter | Confirma seleção de linha | `enableOnFormTags: true` |
 | Backspace | Remove seleção | — |
 
+O componente aceita prop opcional `tableRef?: RefObject<HTMLDivElement | null>` — quando fornecida, a ref é anexada ao wrapper `tabIndex={0}`, permitindo que viewmodels focalizem a tabela programaticamente (e assim ativem o escopo TABLE via `onFocus`).
+
 Usado em: `/orders/list`, `/medication/list`, `/orders/detail`, `/medication/$id`.
 
 ### 2.5 Fluxo: Páginas de Detalhe
@@ -146,7 +148,21 @@ Escopo: `CONTENT`
 
 **Entrada de foco:** via `registerContentFocus` — ao pressionar Enter no link da sidebar para `/`, `focusedIndex` é definido como `0` e o grid recebe foco DOM (`contentAreaRef.current?.focus()`).
 
-### 2.7 Rotas sem hotkeys implementadas
+### 2.7 Fluxo: Listagem de Medicamentos (`/medication/list`)
+
+**Arquivo:** `effects/medication/useListMedications.viewmodel.ts`
+
+Escopo: `CONTENT`
+
+| Tecla | Ação | Condição |
+|-------|------|----------|
+| Escape | Devolve foco à sidebar (link F7) via `focusByPath('/medication/list')` | sempre ativo no escopo CONTENT |
+
+**Entrada de foco:** ao montar, o viewmodel executa `tableRef.current?.focus()` automaticamente, que transfere o foco para o wrapper do `DataTable` e ativa o escopo TABLE. O callback também é registrado via `registerContentFocus` — ao pressionar Enter no link F7 da sidebar enquanto já está na rota, o foco retorna à tabela.
+
+**Saída de foco:** ESC chama `focusByPath('/medication/list')`, focando o link F7 na sidebar e ativando o escopo SIDEBAR.
+
+### 2.8 Rotas sem hotkeys implementadas
 
 | Rota | Viewmodel | Status |
 |------|-----------|--------|
@@ -377,13 +393,14 @@ useHotkeys('esc', handleCancelCloseOrder, { scopes: [HotkeyScope.FORM] })
 
 ### 5.2 Importantes (melhoria de UX)
 
-| Local | O que implementar | Arquivo |
-|-------|-------------------|---------|
-| `/checkout/open` | Enter para submeter formulário de abertura do caixa | `effects/checkout/openCheckout.viewmodel.ts` |
-| `/checkout/resume` | Esc para voltar, Enter para confirmar ações | `effects/checkout/checkoutResume.viewmodel.ts` |
-| `/medication/create` | Enter para avançar entre campos, Esc para cancelar | viewmodel do módulo medication |
-| `/medication/edit.$id` | Enter para salvar, Esc para cancelar | viewmodel do módulo medication |
-| CloseOrderSection | Corrigir Esc (atualmente submete; deveria cancelar) | `effects/orders/useCloseOrderSection.viewmodel.ts` |
+| Local | O que implementar | Arquivo | Status |
+|-------|-------------------|---------|--------|
+| `/medication/list` | Auto-foco na tabela ao entrar; Esc devolve foco à sidebar | `effects/medication/useListMedications.viewmodel.ts` | ✅ Implementado (2026-06-11) |
+| `/checkout/open` | Enter para submeter formulário de abertura do caixa | `effects/checkout/openCheckout.viewmodel.ts` | Pendente |
+| `/checkout/resume` | Esc para voltar, Enter para confirmar ações | `effects/checkout/checkoutResume.viewmodel.ts` | Pendente |
+| `/medication/create` | Enter para avançar entre campos, Esc para cancelar | viewmodel do módulo medication | Pendente |
+| `/medication/edit.$id` | Enter para salvar, Esc para cancelar | viewmodel do módulo medication | Pendente |
+| CloseOrderSection | Corrigir Esc (atualmente submete; deveria cancelar) | `effects/orders/useCloseOrderSection.viewmodel.ts` | Pendente |
 
 ### 5.3 Arquiteturais (refatoração)
 
