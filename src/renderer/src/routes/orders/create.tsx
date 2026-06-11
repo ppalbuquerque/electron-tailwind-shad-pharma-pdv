@@ -13,7 +13,7 @@ import { CloseOrderSection } from '@/sections/orders/create/close-order-section'
 
 import { useCreateOrderViewModel } from '@/effects/orders/useCreateOrder.viewmodel'
 
-import { formatMoney } from '@/utils/format-money'
+import { formatMoneyFromCents } from '@/utils/format-money'
 
 import { OrderItem } from '@/types/orderItem'
 
@@ -82,7 +82,9 @@ function CreateOrder(): ReactNode {
             {selectedMedication ? <AddOrderItem /> : null}
             <div className="flex flex-col items-center pt-2 pb-2 mt-4 bg-emerald-200 rounded-sm">
               <h2 className="font-semibold text-emerald-900 text-lg">Total</h2>
-              <p className="font-bold text-2xl text-emerald-600">{formatMoney(orderTotalRaw)}</p>
+              <p className="font-bold text-2xl text-emerald-600">
+                {formatMoneyFromCents(orderTotalRaw)}
+              </p>
             </div>
             <div className="mt-4">
               <Button

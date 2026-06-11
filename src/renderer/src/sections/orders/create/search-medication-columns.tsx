@@ -1,6 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table'
 
 import { Medication } from '@/types/medication'
+import { formatMoneyFromCents } from '@/utils/format-money'
 
 export const columns: ColumnDef<Medication>[] = [
   {
@@ -8,20 +9,23 @@ export const columns: ColumnDef<Medication>[] = [
     header: 'Produto'
   },
   {
-    accessorKey: 'box_price',
-    header: () => <div>Valor</div>,
+    accessorKey: 'boxPrice',
+    header: 'Preço caixa',
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('value'))
-      const formatted = new Intl.NumberFormat('pt-Br', {
-        style: 'currency',
-        currency: 'BRL'
-      }).format(amount)
-
-      return <div>{row.getValue('box_price')}</div>
+      const value: number = row.getValue('boxPrice')
+      return <span>{formatMoneyFromCents(value)}</span>
     }
   },
   {
-    accessorKey: 'stock_availability',
+    accessorKey: 'unitPrice',
+    header: 'Preço unitário',
+    cell: ({ row }) => {
+      const value: number = row.getValue('unitPrice')
+      return <span>{formatMoneyFromCents(value)}</span>
+    }
+  },
+  {
+    accessorKey: 'stockAvailability',
     header: 'Quantidade'
   }
 ]

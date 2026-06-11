@@ -6,10 +6,13 @@ import {
   ListMedicationsResponse,
   MedicationDetail,
   UpdateMedicationDTO,
-  CreateMedicationDTO,
+  CreateMedicationDTO
 } from './medication.dto'
 
-export type SearchResponse = Pick<Medication, 'name' | 'id' | 'box_price' | 'stock_availability'>[]
+export type SearchResponse = Pick<
+  Medication,
+  'name' | 'id' | 'boxPrice' | 'unitPrice' | 'stockAvailability'
+>[]
 
 class MedicationService {
   static async search({ query }: { query: string }): Promise<SearchResponse> {

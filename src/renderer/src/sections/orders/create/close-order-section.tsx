@@ -8,7 +8,7 @@ import { Spinner } from '@/components/ui/spinner'
 
 import { useCloseOrderSectionViewModel } from '@/effects/orders/useCloseOrderSection.viewmodel'
 
-import { formatMoney } from '@/utils/format-money'
+import { formatMoneyFromCents } from '@/utils/format-money'
 
 interface OrderTotalBoxProps {
   value: string
@@ -69,13 +69,13 @@ function CloseOrderSection({
     orderTotalRaw,
     isLoading,
     onConfirm,
-    onCancel,
+    onCancel
   )
 
   return (
     <div>
       <div className="flex gap-4 mb-4">
-        <OrderTotalBox value={formatMoney(orderTotalRaw)} />
+        <OrderTotalBox value={formatMoneyFromCents(orderTotalRaw)} />
         <PaymentValueBox value={displayPaymentValue} />
         <ChangeBox value={change} />
       </div>
@@ -95,7 +95,13 @@ function CloseOrderSection({
             {isLoading && <Spinner />}
             Confirmar Venda (ESC)
           </Button>
-          <Button type="button" variant="destructive" className="flex-1" onClick={onCancel} disabled={isLoading}>
+          <Button
+            type="button"
+            variant="destructive"
+            className="flex-1"
+            onClick={onCancel}
+            disabled={isLoading}
+          >
             Cancelar Venda
           </Button>
         </div>
