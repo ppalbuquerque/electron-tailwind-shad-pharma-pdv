@@ -25,7 +25,9 @@ function ContentArea(): ReactNode {
       }}
     >
       <Header routeName={getPageTitleByPath(location.pathname as RoutesPath)} />
-      <Outlet />
+      <div className="flex-1 overflow-y-auto">
+        <Outlet />
+      </div>
     </SidebarInset>
   )
 }
