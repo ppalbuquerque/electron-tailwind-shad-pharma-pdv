@@ -26,7 +26,8 @@ function ListOrdersPage(): ReactNode {
     register,
     control,
     handleFilterSubmit,
-    handleOrderClick
+    handleOrderClick,
+    tableRef
   } = useListOrdersViewModel()
 
   return (
@@ -68,6 +69,7 @@ function ListOrdersPage(): ReactNode {
         </form>
 
         <DataTable
+          tableRef={tableRef}
           columns={listOrdersColumns}
           data={orders}
           isLoading={isLoading}
