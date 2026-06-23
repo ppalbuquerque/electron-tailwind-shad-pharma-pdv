@@ -37,6 +37,10 @@ interface DataTableProps<TData, TValue> {
   onDeleteSelection?: (row: TData) => void
   getRowClassName?: (row: TData) => string
   tableRef?: RefObject<HTMLDivElement | null>
+  onNextPage?: () => void
+  onPreviousPage?: () => void
+  hasNextPage?: boolean
+  hasPreviousPage?: boolean
 }
 
 const rowVariants = cva('', {
@@ -64,7 +68,11 @@ export function DataTable<TData, TValue>({
   onConfirmSelection,
   onDeleteSelection,
   getRowClassName,
-  tableRef
+  tableRef,
+  onNextPage,
+  onPreviousPage,
+  hasNextPage,
+  hasPreviousPage
 }: DataTableProps<TData, TValue>): ReactNode {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const table = useReactTable({
@@ -95,7 +103,7 @@ export function DataTable<TData, TValue>({
         setRowSelection({ [rows[nextIndex].id]: true })
       }
     },
-    { scopes: [HotkeyScope.TABLE], enableOnFormTags: true },
+    { scopes: [HotkeyScope.TABLE], enableOnFormTags: true }
   )
 
   useHotkeys(
@@ -111,7 +119,7 @@ export function DataTable<TData, TValue>({
         setRowSelection({ [rows[nextIndex].id]: true })
       }
     },
-    { scopes: [HotkeyScope.TABLE], enableOnFormTags: true },
+    { scopes: [HotkeyScope.TABLE], enableOnFormTags: true }
   )
 
   useHotkeys(
@@ -126,7 +134,7 @@ export function DataTable<TData, TValue>({
         onConfirmSelection(selectedRow.original)
       }
     },
-    { scopes: [HotkeyScope.TABLE], enableOnFormTags: true },
+    { scopes: [HotkeyScope.TABLE], enableOnFormTags: true }
   )
 
   useHotkeys(
@@ -141,8 +149,20 @@ export function DataTable<TData, TValue>({
         onDeleteSelection(selectedRow.original)
       }
     },
-    { scopes: [HotkeyScope.TABLE] },
+    { scopes: [HotkeyScope.TABLE] }
   )
+
+  useHotkeys('ArrowRight', () => onNextPage?.(), {
+    scopes: [HotkeyScope.TABLE],
+    enabled: !!hasNextPage,
+    enableOnFormTags: true
+  })
+
+  useHotkeys('ArrowLeft', () => onPreviousPage?.(), {
+    scopes: [HotkeyScope.TABLE],
+    enabled: !!hasPreviousPage,
+    enableOnFormTags: true
+  })
 
   return (
     <div

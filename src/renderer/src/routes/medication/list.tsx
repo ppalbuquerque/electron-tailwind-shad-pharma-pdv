@@ -52,6 +52,10 @@ function ListMedicationsPage(): ReactNode {
           onConfirmSelection={(row) =>
             navigate({ to: '/medication/$id', params: { id: String(row.id) } })
           }
+          onNextPage={goToNextPage}
+          onPreviousPage={goToPrevPage}
+          hasNextPage={hasNextPage}
+          hasPreviousPage={currentPage > 1}
         />
 
         <div className="flex items-center justify-between">

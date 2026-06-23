@@ -74,6 +74,10 @@ function ListOrdersPage(): ReactNode {
           loadingMessage="Carregando pedidos..."
           emptyMessage="Nenhum pedido encontrado"
           onConfirmSelection={handleOrderClick}
+          onNextPage={goToNextPage}
+          onPreviousPage={goToPrevPage}
+          hasNextPage={currentPage < totalPages}
+          hasPreviousPage={currentPage > 1}
         />
 
         <div className="flex items-center justify-between">
