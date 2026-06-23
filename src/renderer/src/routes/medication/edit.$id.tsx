@@ -17,7 +17,7 @@ function EditMedicationPage(): ReactNode {
     useEditMedicationViewModel(Number(id))
 
   return (
-    <div className="p-6 overflow-y-auto h-[700px]">
+    <div className="p-6 overflow-y-auto">
       <div className="bg-white rounded-sm p-12 border-slate-300 border text-black">
         <h1 className="text-2xl font-bold mb-8">Editar Medicamento</h1>
 
@@ -90,7 +90,9 @@ function EditMedicationPage(): ReactNode {
                   <MoneyInput
                     ref={field.ref}
                     defaultValue={(field.value ?? 0) / 100}
-                    onValueChange={(_, __, values) => field.onChange(Math.round((values?.float ?? 0) * 100))}
+                    onValueChange={(_, __, values) =>
+                      field.onChange(Math.round((values?.float ?? 0) * 100))
+                    }
                   />
                 )}
               />
@@ -106,7 +108,9 @@ function EditMedicationPage(): ReactNode {
                   <MoneyInput
                     ref={field.ref}
                     defaultValue={(field.value ?? 0) / 100}
-                    onValueChange={(_, __, values) => field.onChange(Math.round((values?.float ?? 0) * 100))}
+                    onValueChange={(_, __, values) =>
+                      field.onChange(Math.round((values?.float ?? 0) * 100))
+                    }
                   />
                 )}
               />

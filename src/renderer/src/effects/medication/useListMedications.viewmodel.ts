@@ -1,11 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import type { BaseSyntheticEvent, RefObject } from 'react'
 import { useForm } from 'react-hook-form'
 import { useQuery } from '@tanstack/react-query'
-import type { BaseSyntheticEvent } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 import { MedicationSummary, ListMedicationsResponse } from '@/services/medication/medication.dto'
 import { MedicationService } from '@/services/medication/medication.service'
 import { MEDICATION_QUERY_KEYS } from '@/services/medication/medication.query.keys'
+import { HotkeyScope } from '@/lib/hotkey-scopes'
+import { useSidebarNavigationContext } from '@/contexts/navigation/sidebar-navigation.context'
 
 const PAGE_SIZE = 15
 
@@ -22,15 +25,33 @@ export interface ListMedicationsViewModel {
   goToPrevPage: () => void
   register: ReturnType<typeof useForm<MedicationSearchForm>>['register']
   handleSearchSubmit: (e?: BaseSyntheticEvent) => Promise<void>
+  tableRef: RefObject<HTMLDivElement | null>
 }
 
 export function useListMedicationsViewModel(): ListMedicationsViewModel {
   const [offset, setOffset] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
 
+  const tableRef = useRef<HTMLDivElement>(null)
+  const { focusByPath, registerContentFocus } = useSidebarNavigationContext()
+
   const { register, handleSubmit } = useForm<MedicationSearchForm>()
 
   const isSearching = searchQuery.trim().length > 0
+
+  useEffect(() => {
+    tableRef.current?.focus()
+  }, [])
+
+  useEffect(() => {
+    registerContentFocus(() => tableRef.current?.focus())
+    return () => registerContentFocus(null)
+  }, [registerContentFocus])
+
+  useHotkeys('escape', () => focusByPath('/medication/list'), {
+    scopes: [HotkeyScope.CONTENT],
+    preventDefault: true
+  })
 
   const { data, isLoading } = useQuery({
     queryKey: isSearching
@@ -74,6 +95,7 @@ export function useListMedicationsViewModel(): ListMedicationsViewModel {
     goToNextPage,
     goToPrevPage,
     register,
-    handleSearchSubmit
+    handleSearchSubmit,
+    tableRef
   }
 }
