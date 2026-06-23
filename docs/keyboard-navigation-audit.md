@@ -111,6 +111,15 @@ Bem implementado — isolamento condicional correto.
 | Enter | Quantidade | Move foco para o campo BoxType |
 | Enter | BoxType | Submete formulário de adição de item |
 
+**Arquivo:** `effects/orders/useSearchMedicationDialog.viewmodel.ts`
+
+| Comportamento | Implementação | Condição |
+|----------------|----------------|----------|
+| Auto-foco no `Input` de busca ao abrir o dialog | `onOpenAutoFocus` do `DialogContent` chama `focusSearchInput` (`setFocus('medicationName')`), com `event.preventDefault()` para suprimir o auto-foco padrão do Radix no wrapper da `DataTable` | `AddMedicationDialog` aberto |
+| Ativação manual do escopo `TABLE` | `useEffect` sobre `open`: `enableScope(HotkeyScope.TABLE)` ao abrir, `disableScope(HotkeyScope.TABLE)` ao fechar (e no cleanup) | `open === true` |
+
+> **Por que:** o Radix Dialog auto-foca o primeiro elemento focável do `DialogContent`, que é o wrapper da `DataTable` (não o `Input` de busca). O wrapper depende do próprio `onFocus`/`onBlur` para ativar/desativar o escopo `TABLE` — mover o foco para o `Input` via `preventDefault` quebraria essa ativação automática. Por isso o escopo `TABLE` é ativado manualmente enquanto o modal está aberto, e os hotkeys de navegação da tabela (`ArrowUp`/`ArrowDown`/`Enter`) continuam funcionando com o `Input` focado porque são declarados com `enableOnFormTags: true`.
+
 ### 2.4 Fluxo: Tabelas de Dados (DataTable)
 
 **Arquivo:** `components/ui/data-table.tsx`
