@@ -1,6 +1,6 @@
 # Auditoria de Navegação por Teclado
 
-> Gerado em: 2026-04-21 | Última atualização: 2026-06-11
+> Gerado em: 2026-04-21 | Última atualização: 2026-06-23
 
 ---
 
@@ -73,10 +73,17 @@ O `AppSidebar` usa um array de `useRef` para rastrear os links e gerencia o foco
 
 **Arquivo:** `effects/checkout/closeCheckout.viewmodel.ts`
 
-| Tecla | Ação | Condição |
-|-------|------|----------|
-| Enter | Confirma fechamento do caixa | `isModalOpen && !isPending` |
-| Escape | Cancela / fecha modal | `isModalOpen` |
+Escopos: `MODAL` (modal de confirmação) + `CONTENT` (tela normal)
+
+| Tecla | Ação | Escopo | Condição |
+|-------|------|--------|----------|
+| Enter | Confirma fechamento do caixa | `MODAL` | `isModalOpen && !isPending` |
+| Escape | Cancela / fecha modal | `MODAL` | `isModalOpen` |
+| Escape | Devolve foco à sidebar (link F6) via `focusByPath('/checkout/close')` | `CONTENT` | `!isModalOpen` (`enableOnFormTags: true`) |
+
+**Entrada de foco:** registra callback via `registerContentFocus(() => inputRef.current?.focus())` — ao pressionar Enter no link F6 da sidebar, o foco retorna ao `MoneyInput`.
+
+**Saída de foco:** com o modal fechado, ESC chama `focusByPath('/checkout/close')`, focando o link F6 e ativando o escopo SIDEBAR. A guarda `enabled: !isModalOpen` impede que o ESC do escopo CONTENT colida com o ESC do escopo MODAL (ambos os escopos ficam ativos enquanto o modal está aberto).
 
 Bem implementado — isolamento condicional correto.
 
@@ -396,6 +403,7 @@ useHotkeys('esc', handleCancelCloseOrder, { scopes: [HotkeyScope.FORM] })
 | Local | O que implementar | Arquivo | Status |
 |-------|-------------------|---------|--------|
 | `/medication/list` | Auto-foco na tabela ao entrar; Esc devolve foco à sidebar | `effects/medication/useListMedications.viewmodel.ts` | ✅ Implementado (2026-06-11) |
+| `/checkout/close` | Esc (modal fechado) devolve foco à sidebar; Enter na sidebar retorna foco ao input | `effects/checkout/closeCheckout.viewmodel.ts` | ✅ Implementado (2026-06-23) |
 | `/checkout/open` | Enter para submeter formulário de abertura do caixa | `effects/checkout/openCheckout.viewmodel.ts` | Pendente |
 | `/checkout/resume` | Esc para voltar, Enter para confirmar ações | `effects/checkout/checkoutResume.viewmodel.ts` | Pendente |
 | `/medication/create` | Enter para avançar entre campos, Esc para cancelar | viewmodel do módulo medication | Pendente |

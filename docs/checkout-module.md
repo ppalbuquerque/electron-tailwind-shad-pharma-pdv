@@ -271,7 +271,10 @@ interface CloseCheckoutViewModel {
 - Busca `grandTotal` via `useQuery([CHECKOUT_QUERY_KEYS.RESUME])` → `GET /checkout/resume`
 - Gerencia o formulário via `react-hook-form`; `closingValue` é observado com `watch`
 - `openModal` é chamado via submit do form (Enter no input) e pelo botão "Fechar Caixa"
-- `handleCancel` fecha o modal sem fazer requisição
+- `handleCancel` fecha o modal de confirmação sem fazer requisição (usado pelo `onOpenChange` e pelo botão "Cancelar" do modal)
+- Hotkey `Esc` (escopo `CONTENT`, `enableOnFormTags: true`, `enabled: !isModalOpen`) → `focusByPath('/checkout/close')` — transfere foco para o botão "Fechar Caixa" (F6) na sidebar
+- Hotkey `Esc` (escopo `MODAL`, `enabled: isModalOpen`) → `handleCancel` — fecha o modal de confirmação
+- `registerContentFocus(() => inputRef.current?.focus())` — registrado em `SidebarNavigationContext` para que `Enter` na sidebar restaure o foco ao `MoneyInput`
 - `handleConfirm` chama `POST /checkout/close` via `useMutation`
   - Sucesso: toast `'Caixa fechado com sucesso'` + `setTimeout(5000)` → navega para `/`
   - Erro: toast `'Erro ao fechar o caixa'`, modal permanece aberto
@@ -392,7 +395,7 @@ Igual ao padrão de `/checkout/close`: ícone `LockKeyhole` em `bg-slate-100`, a
 │  ┌─────────────────────────┐    │
 │  │ Valor de fechamento     │    │
 │  │ [MoneyInput]            │    │
-│  │ [Cancelar] [Fechar Cx]  │    │
+│  │ [   Fechar Caixa    ]   │    │
 │  └─────────────────────────┘    │
 │                                 │
 │  [Dialog de confirmação]        │
@@ -405,15 +408,24 @@ Igual ao padrão de `/checkout/close`: ícone `LockKeyhole` em `bg-slate-100`, a
 
 #### Comportamento
 - Foco automático no `MoneyInput` ao montar (via `useRef` + `useEffect`)
-- Botão "Fechar Caixa" desabilitado enquanto `closingValue <= 0`
+- Botão "Fechar Caixa" ocupa a largura total e fica desabilitado enquanto `closingValue <= 0`
+- Botão "Cancelar" removido da UI (não fazia sentido nesta tela)
 - Enter no input (form submit) → abre modal de confirmação (se `closingValue > 0`)
 - Modal exibe: `grandTotal`, `closingValue` e `difference` formatados via `formatMoney`
 - `difference` exibido em vermelho se negativo, verde se positivo/zero (`BoxValue.className`)
-- Esc com modal aberto → fecha modal via `onOpenChange` + retorna foco ao input
-- Enter com modal aberto → chama `handleConfirm()` via `onKeyDown` no `DialogContent`
+- Esc com modal aberto → fecha modal via `handleCancel` (escopo `MODAL`) + retorna foco ao input
+- Enter com modal aberto → chama `handleConfirm()` (escopo `MODAL`)
 - Botões Cancelar e Confirmar do modal desabilitados durante `isLoading`
 - Spinner no botão Confirmar durante loading
 - Após sucesso: toast verde + redirect para `/` após 5 segundos
+
+#### Navegação por Teclado
+
+| Tecla | Ação |
+|-------|------|
+| `Esc` (modal fechado) | Transfere o foco para a sidebar (escopo `SIDEBAR`), focando no botão "Fechar Caixa" (F6) via `focusByPath('/checkout/close')` |
+| `Esc` (modal aberto) | Fecha o modal de confirmação (escopo `MODAL`) e retorna o foco ao `MoneyInput` |
+| `Enter` (na sidebar) | Retorna o foco para o `MoneyInput` na ContentArea via `triggerContentFocus` |
 
 ---
 
