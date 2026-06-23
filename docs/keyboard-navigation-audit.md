@@ -169,7 +169,23 @@ Escopo: `CONTENT`
 
 **Saída de foco:** ESC chama `focusByPath('/medication/list')`, focando o link F7 na sidebar e ativando o escopo SIDEBAR.
 
-### 2.8 Rotas sem hotkeys implementadas
+### 2.8 Fluxo: Listagem de Pedidos (`/orders/list`)
+
+**Arquivo:** `effects/orders/useListOrders.viewmodel.ts`
+
+Escopo: `CONTENT`
+
+| Tecla | Ação | Condição |
+|-------|------|----------|
+| Escape | Devolve foco à sidebar (link F5) via `focusByPath('/orders/list')` | sempre ativo no escopo CONTENT |
+
+**Entrada de foco:** ao montar, o viewmodel executa `tableRef.current?.focus()` automaticamente, que transfere o foco para o wrapper do `DataTable` e ativa o escopo TABLE. O callback também é registrado via `registerContentFocus` — ao pressionar Enter no link F5 da sidebar enquanto já está na rota, o foco retorna à tabela.
+
+**Saída de foco:** ESC chama `focusByPath('/orders/list')`, focando o link F5 na sidebar e ativando o escopo SIDEBAR.
+
+Espelha o padrão de `/medication/list` (§2.7).
+
+### 2.9 Rotas sem hotkeys implementadas
 
 | Rota | Viewmodel | Status |
 |------|-----------|--------|
@@ -403,6 +419,7 @@ useHotkeys('esc', handleCancelCloseOrder, { scopes: [HotkeyScope.FORM] })
 | Local | O que implementar | Arquivo | Status |
 |-------|-------------------|---------|--------|
 | `/medication/list` | Auto-foco na tabela ao entrar; Esc devolve foco à sidebar | `effects/medication/useListMedications.viewmodel.ts` | ✅ Implementado (2026-06-11) |
+| `/orders/list` | Auto-foco na tabela ao entrar; Esc devolve foco à sidebar (link F5) | `effects/orders/useListOrders.viewmodel.ts` | ✅ Implementado (2026-06-23) |
 | `/checkout/close` | Esc (modal fechado) devolve foco à sidebar; Enter na sidebar retorna foco ao input | `effects/checkout/closeCheckout.viewmodel.ts` | ✅ Implementado (2026-06-23) |
 | `/checkout/open` | Enter para submeter formulário de abertura do caixa | `effects/checkout/openCheckout.viewmodel.ts` | Pendente |
 | `/checkout/resume` | Esc para voltar, Enter para confirmar ações | `effects/checkout/checkoutResume.viewmodel.ts` | Pendente |
