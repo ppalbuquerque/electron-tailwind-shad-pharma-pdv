@@ -10,6 +10,7 @@ import { HotkeyScope } from '@/lib/hotkey-scopes'
 import { CheckoutService } from '@/services/checkout.service'
 import { CHECKOUT_QUERY_KEYS } from '@/services/checkout/checkout.query.keys'
 import { useCheckoutStatus } from '@/effects/checkout/useCheckoutStatus'
+import { useSidebarNavigationContext } from '@/contexts/navigation/sidebar-navigation.context'
 
 interface CloseCheckoutForm {
   closingValue: number
@@ -35,6 +36,8 @@ function useCloseCheckoutViewModel(): CloseCheckoutViewModel {
   const queryClient = useQueryClient()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const { focusByPath, registerContentFocus } = useSidebarNavigationContext()
 
   const checkoutStatus = useCheckoutStatus()
 
@@ -65,6 +68,11 @@ function useCloseCheckoutViewModel(): CloseCheckoutViewModel {
       inputRef.current?.focus()
     }
   }, [isModalOpen])
+
+  useEffect(() => {
+    registerContentFocus(() => inputRef.current?.focus())
+    return () => registerContentFocus(null)
+  }, [registerContentFocus])
 
   const openModal = (): void => {
     setIsModalOpen(true)
@@ -105,6 +113,13 @@ function useCloseCheckoutViewModel(): CloseCheckoutViewModel {
     preventDefault: true,
   })
   useHotkeys('escape', handleCancel, { scopes: [HotkeyScope.MODAL], enabled: isModalOpen })
+
+  useHotkeys('escape', () => focusByPath('/checkout/close'), {
+    scopes: [HotkeyScope.CONTENT],
+    enableOnFormTags: true,
+    preventDefault: true,
+    enabled: !isModalOpen,
+  })
 
   return {
     control,

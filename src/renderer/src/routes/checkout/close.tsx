@@ -73,13 +73,10 @@ function CloseCheckout(): ReactNode {
                 />
               )}
             />
-            <div className="mt-4 flex justify-between w-full">
-              <Button variant="destructive" type="button" className="flex-1 mr-2">
-                Cancelar (ESC)
-              </Button>
+            <div className="mt-4 w-full">
               <Button
                 type="submit"
-                className="flex-1 bg-red-600 hover:bg-red-700"
+                className="w-full bg-red-600 hover:bg-red-700"
                 disabled={!closingValue || closingValue <= 0}
               >
                 Fechar Caixa (Enter)

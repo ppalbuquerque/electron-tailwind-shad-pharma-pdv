@@ -1,12 +1,15 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import type { BaseSyntheticEvent } from 'react'
+import type { BaseSyntheticEvent, RefObject } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 import { OrderSummary } from '@/services/orders/orders.dto'
 import { OrdersService } from '@/services/orders/orders.service'
 import { ORDERS_QUERY_KEYS } from '@/services/orders/orders.query.keys'
+import { HotkeyScope } from '@/lib/hotkey-scopes'
+import { useSidebarNavigationContext } from '@/contexts/navigation/sidebar-navigation.context'
 
 const PAGE_SIZE = 15
 
@@ -28,13 +31,31 @@ export interface ListOrdersViewModel {
   control: ReturnType<typeof useForm<OrdersFilterForm>>['control']
   handleFilterSubmit: (e?: BaseSyntheticEvent) => Promise<void>
   handleOrderClick: (order: OrderSummary) => void
+  tableRef: RefObject<HTMLDivElement | null>
 }
 
 export function useListOrdersViewModel(): ListOrdersViewModel {
   const [offset, setOffset] = useState(0)
   const [filters, setFilters] = useState<OrdersFilterForm>({})
 
+  const tableRef = useRef<HTMLDivElement>(null)
+  const { focusByPath, registerContentFocus } = useSidebarNavigationContext()
+
   const { register, control, handleSubmit } = useForm<OrdersFilterForm>()
+
+  useEffect(() => {
+    tableRef.current?.focus()
+  }, [])
+
+  useEffect(() => {
+    registerContentFocus(() => tableRef.current?.focus())
+    return () => registerContentFocus(null)
+  }, [registerContentFocus])
+
+  useHotkeys('escape', () => focusByPath('/orders/list'), {
+    scopes: [HotkeyScope.CONTENT],
+    preventDefault: true
+  })
 
   const { data, isLoading } = useQuery({
     queryKey: [ORDERS_QUERY_KEYS.LIST_ORDERS, offset, filters],
@@ -86,6 +107,7 @@ export function useListOrdersViewModel(): ListOrdersViewModel {
     register,
     control,
     handleFilterSubmit,
-    handleOrderClick
+    handleOrderClick,
+    tableRef
   }
 }

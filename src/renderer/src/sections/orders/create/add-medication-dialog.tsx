@@ -21,12 +21,18 @@ export function AddMedicationDialog({
   defaultSearchValue,
   handleOnMedicationDialogConfirm
 }: AddMedicationDialogProps): ReactNode {
-  const { register, medicationTableData, isLoadingMedications } =
-    useSearchMedicationDialogViewModel(defaultSearchValue)
+  const { register, medicationTableData, isLoadingMedications, focusSearchInput } =
+    useSearchMedicationDialogViewModel(defaultSearchValue, !!open)
 
   return (
     <Dialog open={open}>
-      <DialogContent className="bg-white max-w-5xl!">
+      <DialogContent
+        className="bg-white max-w-5xl!"
+        onOpenAutoFocus={(event) => {
+          event.preventDefault()
+          focusSearchInput()
+        }}
+      >
         <DialogHeader>
           <DialogTitle className="text-black">Lista de Medicamentos</DialogTitle>
         </DialogHeader>
