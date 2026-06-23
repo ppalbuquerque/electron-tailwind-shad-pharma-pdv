@@ -3,7 +3,7 @@ export const HotkeyScope = {
   CONTENT: 'content',
   MODAL: 'modal',
   TABLE: 'table',
-  FORM: 'form',
+  FORM: 'form'
 } as const
 
 export type HotkeyScope = (typeof HotkeyScope)[keyof typeof HotkeyScope]
