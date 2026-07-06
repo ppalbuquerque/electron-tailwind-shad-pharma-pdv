@@ -1,5 +1,5 @@
 export type Medication = {
-  id: number
+  id: string
   name: string
   boxPrice: number
   unitPrice: number

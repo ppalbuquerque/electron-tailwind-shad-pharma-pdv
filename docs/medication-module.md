@@ -79,7 +79,7 @@ Fonte de verdade: `docs/api-reference.md`. Resumo dos endpoints usados neste mó
 
 ### `GET /medication/:id` — Detalhe por ID
 
-**Path params:** `id` (integer)
+**Path params:** `id` (string, UUID) — validado por `ParseUUIDPipe` no backend
 
 **Response `200`:** objeto `MedicationDetail`
 
@@ -118,7 +118,7 @@ Fonte de verdade: `docs/api-reference.md`. Resumo dos endpoints usados neste mó
 
 ```typescript
 interface MedicationSummary {
-  id: number
+  id: string             // UUID (ex: 3f2504e0-4f89-41d3-9a0c-0305e82c3301)
   name: string
   chemicalComposition: string
   boxPrice: number        // Inteiro em centavos (ex: 4800 = R$ 48,00)
@@ -148,7 +148,7 @@ interface ListMedicationsParams {
 
 ```typescript
 type Medication = {
-  id: number
+  id: string               // UUID
   name: string
   box_price: string        // snake_case — retorno raw de search
   unit_price: string
@@ -163,7 +163,7 @@ type Medication = {
 
 ```typescript
 interface MedicationDetail {
-  id: number
+  id: string             // UUID
   name: string
   chemicalComposition: string
   stockAvailability: number
@@ -183,7 +183,7 @@ interface MedicationDetail {
 
 ```typescript
 interface UpdateMedicationDTO {
-  id: number
+  id: string             // UUID
   name?: string
   chemicalComposition?: string
   stockAvailability?: number
@@ -218,7 +218,7 @@ interface CreateMedicationDTO {
 
 ```typescript
 interface UploadFileResponse {
-  id: number
+  id: number             // File entity mantém PK inteira (não migrada para UUID)
   fileName: string
   contentLength: number
   contentType: string
@@ -241,7 +241,7 @@ class MedicationService {
   static async search({ query: string }): Promise<SearchResponse>
 
   // Detalhe por ID — GET /medication/:id
-  static async getMedicationById(id: number): Promise<MedicationDetail>
+  static async getMedicationById(id: string): Promise<MedicationDetail>
 
   // Atualizar medicamento — PUT /medication
   static async updateMedication(payload: UpdateMedicationDTO): Promise<void>
@@ -501,6 +501,7 @@ interface CreateMedicationViewModel {
 2. A busca substitui completamente a listagem paginada — não são filtros sobrepostos
 3. Limpar o campo de busca e submeter retorna à listagem paginada do início
 4. `boxPrice` e `unitPrice` chegam como inteiro em centavos do backend (ex: `4800` = R$ 48,00); usar `formatMoneyFromCents` de `utils/format-money` para exibição
+5. O `id` de medicamento é **UUID (string)**. Os params de rota (`/medication/:id`, `/medication/edit/:id`) são consumidos diretamente como string — **nunca** converter com `Number(id)` (geraria `NaN`). Ao exibir o UUID em tabela (ex: itens do pedido), truncar para os 8 primeiros chars com o valor completo no `title` do elemento
 
 ---
 

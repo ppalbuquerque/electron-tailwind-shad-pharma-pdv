@@ -36,7 +36,7 @@ export interface OrderItemDetail {
   totalValue: number
   boxType: 'unit' | 'box'
   medication: {
-    id: number
+    id: string
     name: string
     unitPrice: number
     boxPrice: number
