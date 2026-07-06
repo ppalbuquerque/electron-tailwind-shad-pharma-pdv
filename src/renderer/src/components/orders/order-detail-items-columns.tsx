@@ -21,8 +21,12 @@ export const orderDetailItemsColumns: ColumnDef<OrderItemDetail>[] = [
     accessorKey: 'medication.id',
     header: 'ID do produto',
     cell: ({ row }) => {
-      const id: number = row.original.medication.id
-      return <span className="font-mono text-sm">#{id}</span>
+      const id: string = row.original.medication.id
+      return (
+        <span className="font-mono text-sm" title={id}>
+          #{id.slice(0, 8)}
+        </span>
+      )
     }
   },
   {

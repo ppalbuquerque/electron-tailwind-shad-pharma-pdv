@@ -13,7 +13,7 @@ export const Route = createFileRoute('/medication/$id')({
 function MedicationDetailPage(): ReactNode {
   const { id } = Route.useParams()
   const navigate = useNavigate()
-  const { medication, isLoading, isError } = useMedicationDetailViewModel(Number(id))
+  const { medication, isLoading, isError } = useMedicationDetailViewModel(id)
 
   if (isLoading) {
     return (

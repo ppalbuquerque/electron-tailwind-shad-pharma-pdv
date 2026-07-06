@@ -25,7 +25,7 @@ class MedicationService {
     return data
   }
 
-  static async getMedicationById(id: number): Promise<MedicationDetail> {
+  static async getMedicationById(id: string): Promise<MedicationDetail> {
     const { data } = await apiClient.get<MedicationDetail>(`/medication/${id}`)
     return data
   }

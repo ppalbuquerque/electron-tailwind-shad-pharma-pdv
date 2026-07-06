@@ -14,7 +14,7 @@ export const Route = createFileRoute('/medication/edit/$id')({
 function EditMedicationPage(): ReactNode {
   const { id } = Route.useParams()
   const { register, control, errors, isValid, isSubmitting, currentPhotoUrl, onSubmit } =
-    useEditMedicationViewModel(Number(id))
+    useEditMedicationViewModel(id)
 
   return (
     <div className="p-6 overflow-y-auto">

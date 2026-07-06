@@ -49,9 +49,7 @@ function ListMedicationsPage(): ReactNode {
           loadingMessage="Carregando medicamentos..."
           emptyMessage="Nenhum medicamento encontrado"
           getRowClassName={(row) => (row.stockAvailability <= 0 ? 'bg-red-100 text-red-800' : '')}
-          onConfirmSelection={(row) =>
-            navigate({ to: '/medication/$id', params: { id: String(row.id) } })
-          }
+          onConfirmSelection={(row) => navigate({ to: '/medication/$id', params: { id: row.id } })}
           onNextPage={goToNextPage}
           onPreviousPage={goToPrevPage}
           hasNextPage={hasNextPage}

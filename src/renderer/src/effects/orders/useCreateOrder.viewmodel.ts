@@ -90,7 +90,7 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
 
     const formattedOrderItems = items.map((orderItem) => ({
       amount: orderItem.quantity,
-      medicationId: String(orderItem.medication.id),
+      medicationId: orderItem.medication.id,
       totalValue: orderItem.subtotal,
       boxType: orderItem.boxType
     }))

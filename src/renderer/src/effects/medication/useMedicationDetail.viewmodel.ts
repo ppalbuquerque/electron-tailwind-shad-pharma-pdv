@@ -14,7 +14,7 @@ export interface MedicationDetailViewModel {
   isError: boolean
 }
 
-export function useMedicationDetailViewModel(id: number): MedicationDetailViewModel {
+export function useMedicationDetailViewModel(id: string): MedicationDetailViewModel {
   const navigate = useNavigate()
 
   useHotkeys('esc', () => navigate({ to: '/medication/list' }), {

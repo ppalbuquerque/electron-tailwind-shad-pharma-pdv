@@ -43,7 +43,7 @@ interface EditMedicationViewModel {
   onSubmit: () => Promise<void>
 }
 
-export function useEditMedicationViewModel(id: number): EditMedicationViewModel {
+export function useEditMedicationViewModel(id: string): EditMedicationViewModel {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -109,7 +109,7 @@ export function useEditMedicationViewModel(id: number): EditMedicationViewModel 
       })
 
       toast.success('Medicamento atualizado com sucesso')
-      navigate({ to: '/medication/$id', params: { id: String(id) } })
+      navigate({ to: '/medication/$id', params: { id } })
     } catch {
       toast.error('Erro ao atualizar o medicamento')
     }

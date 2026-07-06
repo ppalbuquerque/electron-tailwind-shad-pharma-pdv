@@ -4,7 +4,7 @@ export interface ListMedicationsParams {
 }
 
 export interface MedicationSummary {
-  id: number
+  id: string
   name: string
   chemicalComposition: string
   boxPrice: number
@@ -18,7 +18,7 @@ export interface ListMedicationsResponse {
 }
 
 export interface MedicationDetail {
-  id: number
+  id: string
   name: string
   chemicalComposition: string
   stockAvailability: number
@@ -33,7 +33,7 @@ export interface MedicationDetail {
 }
 
 export interface UpdateMedicationDTO {
-  id: number
+  id: string
   name?: string
   chemicalComposition?: string
   stockAvailability?: number
