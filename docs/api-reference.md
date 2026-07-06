@@ -153,6 +153,14 @@ Gerencia pedidos dentro de uma sessão de caixa ativa.
 | `checkoutId` | string (UUID) | — | Filtro por checkout |
 | `createdAtFrom` | string (ISO 8601) | — | Data de criação >= |
 | `createdAtTo` | string (ISO 8601) | — | Data de criação <= |
+| `sort` | `createdAt_desc` \| `createdAt_asc` \| `totalValue_desc` \| `totalValue_asc` | `createdAt_desc` | Ordenação dos resultados. Sempre aplicada. Valor fora da lista → `400 Bad Request` |
+
+> Ordenação padrão: `createdAt_desc` (mais recente → mais antigo). O param `sort` é opcional; um valor não listado retorna `400 Bad Request` (validação `isEnum`).
+
+> **Validação do range de datas** (`400 Bad Request` em caso de violação):
+> - `createdAtFrom` e `createdAtTo` são obrigatórios em conjunto — enviar apenas um retorna erro (`isNotEmpty`).
+> - `createdAtFrom` deve ser **menor ou igual** a `createdAtTo` (`isDateRangeOrdered`); range invertido retorna erro.
+> - Nenhuma das duas datas → válido (filtro de data não aplicado).
 
 **Response `200`**
 ```json
@@ -193,15 +201,20 @@ Gerencia pedidos dentro de uma sessão de caixa ativa.
       "totalValue": 120.00,
       "boxType": "unit",
       "medication": {
-        "id": 1,
+        "id": "3f2504e0-4f89-41d3-9a0c-0305e82c3301",
         "name": "Dipirona 500mg",
+        "chemicalComposition": "Dipirona monoidratada",
+        "boxPrice": 48000,
         "unitPrice": 6000,
-        "boxPrice": 48000
+        "samplePhotoUrl": "https://...",
+        "stockAvailability": 120
       }
     }
   ]
 }
 ```
+
+> **Projeção de medication:** cada `medication` dentro de `orderItems` retorna apenas estes campos: `id`, `name`, `chemicalComposition`, `boxPrice`, `unitPrice`, `samplePhotoUrl`, `stockAvailability`. Demais campos do medicamento não são expostos neste endpoint.
 
 **Erros**
 | Status | errorCode | Quando |
@@ -212,7 +225,7 @@ Gerencia pedidos dentro de uma sessão de caixa ativa.
 
 ### `POST /orders` — Criar pedido
 
-Exige checkout aberto. `totalValue` de cada item deve ser calculado pelo frontend.
+Exige checkout aberto. O `totalValue` de cada item **é calculado no backend** (`amount * boxPrice` para `box`, `amount * unitPrice` para `unit`) — o frontend **não** deve enviá-lo. Ao criar o pedido, o `stockAvailability` do medicamento é decrementado pelas unidades pedidas (`amount * boxAmount` para `box`, `amount` para `unit`).
 
 **Request body**
 ```json
@@ -220,30 +233,33 @@ Exige checkout aberto. `totalValue` de cada item deve ser calculado pelo fronten
   "paymentValue": 150.00,
   "orderItems": [
     {
-      "medicationId": "1",
+      "medicationId": "3f2504e0-4f89-41d3-9a0c-0305e82c3301",
       "amount": 2,
-      "totalValue": 120.00,
       "boxType": "unit"
     }
   ]
 }
 ```
 
-| Campo | Tipo | Obrigatório | Descrição |
+| Campo | Tipo | Obrigatório | Validação |
 |-------|------|-------------|-----------|
-| `paymentValue` | number | Sim | Valor pago pelo cliente |
-| `orderItems` | array | Sim | Mínimo 1 item |
-| `orderItems[].medicationId` | string | Sim | ID do medicamento |
-| `orderItems[].amount` | number (int) | Sim | Quantidade |
-| `orderItems[].totalValue` | number | Sim | Valor total do item |
-| `orderItems[].boxType` | `"box"` \| `"unit"` | Não | Padrão: `"unit"` |
+| `paymentValue` | number | Sim | `>= 0` |
+| `orderItems` | array | Sim | Mínimo 1 item (`ArrayNotEmpty`) |
+| `orderItems[].medicationId` | string (uuid) | Sim | UUID válido (`@IsUUID`) |
+| `orderItems[].amount` | number (int) | Sim | Inteiro `>= 1` |
+| `orderItems[].boxType` | `"box"` \| `"unit"` | Sim | Deve ser um valor do enum |
 
-**Response `201`** — retorna o pedido completo com `orderItems` populados (mesmo schema de `GET /orders/:id`).
+> **Validação:** o corpo é validado pelo `ValidationPipe` global (`whitelist` + `forbidNonWhitelisted`). Campos extras (inclusive `totalValue` no item, que agora é calculado no servidor) ou que violem as regras acima retornam `400 Bad Request` com mensagens por campo. Itens do array são validados individualmente via `@ValidateNested`.
+
+**Response `201`** — retorna o pedido completo com `orderItems` populados (cada item já com o `totalValue` calculado; mesmo schema de `GET /orders/:id`).
 
 **Erros**
 | Status | errorCode | Quando |
 |--------|-----------|--------|
+| 400 | — | Corpo inválido (campo faltando, tipo errado, item inválido, propriedade não permitida) |
 | 403 | `003` | Não há checkout aberto |
+| 404 | `008` | Algum `medicationId` do payload não existe |
+| 409 | `007` | Unidades pedidas excedem o estoque disponível do medicamento |
 
 ---
 
@@ -290,13 +306,14 @@ Utiliza full-text search em português (tsvector) no banco.
 ```json
 [
   {
-    "id": 11,
+    "id": "9c858901-8a57-4791-81fe-4c455b099bc9",
     "name": "Macrodantina",
     "chemicalComposition": "Nitrofuratoína",
     "stockAvailability": 10,
     "shelfLocation": "3F",
     "boxPrice": 1000,
     "unitPrice": 1000,
+    "boxAmount": 20,
     "usefulness": "agente antibacteriano...",
     "samplePhotoUrl": "BLANK",
     "dosageInstructions": "De 8 em 8 horas",
@@ -311,13 +328,14 @@ Utiliza full-text search em português (tsvector) no banco.
 
 ### `GET /medication/:id` — Buscar por ID
 
-**Path params:** `id` (integer)
+**Path params:** `id` (uuid) — validado por `ParseUUIDPipe`.
 
 **Response `200`** — objeto `Medication` completo.
 
 **Erros**
 | Status | Quando |
 |--------|--------|
+| 400 | `id` não é um UUID válido |
 | 404 | Medicamento não encontrado |
 
 ---
@@ -333,13 +351,14 @@ Utiliza full-text search em português (tsvector) no banco.
   "shelfLocation": "A-12",
   "boxPrice": 4800,
   "unitPrice": 600,
+  "boxAmount": 20,
   "usefulness": "Analgésico e antitérmico",
   "dosageInstructions": "1 comprimido a cada 6 horas",
   "samplePhotoUrl": "https://..."
 }
 ```
 
-Todos os campos são obrigatórios.
+Todos os campos são obrigatórios, exceto `boxAmount` (opcional, integer — quantidade de unidades por caixa; default `1` quando omitido).
 
 **Response `201`** — objeto `Medication` com `id`, `createdAt` e `updatedAt` gerados.
 
@@ -347,7 +366,7 @@ Todos os campos são obrigatórios.
 
 ### `PUT /medication` — Atualizar medicamento
 
-**Request body** — mesmo schema do POST, com `id` (obrigatório) e demais campos opcionais.
+**Request body** — mesmo schema do POST, com `id` (uuid, obrigatório, `@IsUUID`) e demais campos opcionais.
 
 **Response `204`** — sem corpo.
 
@@ -360,13 +379,14 @@ Todos os campos são obrigatórios.
 
 ### `DELETE /medication/:id` — Remover medicamento
 
-**Path params:** `id` (integer)
+**Path params:** `id` (uuid) — validado por `ParseUUIDPipe`.
 
 **Response `200`** — sem corpo.
 
 **Erros**
 | Status | Quando |
 |--------|--------|
+| 400 | `id` não é um UUID válido |
 | 404 | Medicamento não encontrado |
 
 ---
@@ -375,13 +395,14 @@ Todos os campos são obrigatórios.
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
-| `id` | integer | PK auto-increment |
+| `id` | string (uuid) | PK — UUID gerado via `uuid_generate_v4()` |
 | `name` | string | Nome comercial |
 | `chemicalComposition` | string | Composição química / princípio ativo |
 | `stockAvailability` | integer | Quantidade em estoque |
 | `shelfLocation` | string | Localização na prateleira |
 | `boxPrice` | integer | Preço por caixa em centavos (ex: 4800 = R$ 48,00) |
 | `unitPrice` | integer | Preço por unidade em centavos (ex: 600 = R$ 6,00) |
+| `boxAmount` | integer | Quantidade de unidades por caixa (opcional, default `1`) |
 | `usefulness` | string | Indicação terapêutica |
 | `dosageInstructions` | string | Posologia |
 | `samplePhotoUrl` | string | URL da foto do produto |
@@ -464,6 +485,8 @@ Todos os erros de domínio retornam:
 | `004` | 404 | Order has not been found | orders |
 | `005` | 404 | There is no open checkout | checkout |
 | `006` | 404 | There are no checkouts | checkout |
+| `007` | 409 | Insufficient stock for medication | orders |
+| `008` | 404 | Medication has not been found | orders |
 
 Erros de validação de DTO retornam HTTP `400` com o formato padrão do NestJS (`message[]`, `error`, `statusCode`).
 
