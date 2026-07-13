@@ -3,7 +3,6 @@ export interface CreateOrderDTO {
   orderItems: {
     medicationId: string
     amount: number
-    totalValue: number
     boxType: 'unit' | 'box'
   }[]
 }

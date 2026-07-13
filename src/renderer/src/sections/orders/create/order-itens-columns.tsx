@@ -1,7 +1,12 @@
 import { ColumnDef } from '@tanstack/react-table'
 
-import { OrderItem } from '@/types/orderItem'
+import { BoxType, OrderItem } from '@/types/orderItem'
 import { formatMoneyFromCents } from '@/utils/format-money'
+
+const BOX_TYPE_LABEL: Record<BoxType, string> = {
+  box: 'Caixa(s)',
+  unit: 'Unidade(s)'
+}
 
 export const columns: ColumnDef<OrderItem>[] = [
   {
@@ -18,6 +23,10 @@ export const columns: ColumnDef<OrderItem>[] = [
   },
   {
     accessorKey: 'quantity',
-    header: 'Quantidade'
+    header: 'Quantidade',
+    cell: ({ row }) => {
+      const { quantity, boxType } = row.original
+      return <div>{`${quantity} ${BOX_TYPE_LABEL[boxType]}`}</div>
+    }
   }
 ]
