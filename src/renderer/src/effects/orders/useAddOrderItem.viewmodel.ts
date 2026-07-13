@@ -57,11 +57,14 @@ function useAddOrderItemViewModel(): AddOrderItemViewModel {
     if (state.selectedMedication) {
       const { selectedMedication } = state
 
+      const unitPrice =
+        data.boxType === 'box' ? selectedMedication.boxPrice : selectedMedication.unitPrice
+
       const newOrderItem: OrderItem = {
         medication: selectedMedication,
         boxType: data.boxType,
         quantity: data.quantity,
-        subtotal: selectedMedication.boxPrice * data.quantity
+        subtotal: unitPrice * data.quantity
       }
 
       dispatch({ type: 'addItem', item: newOrderItem })
