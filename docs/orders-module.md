@@ -60,10 +60,12 @@ src/renderer/src/
 {
   "paymentValue": 100.00,
   "orderItems": [
-    { "medicationId": "uuid", "amount": 2, "totalValue": 50.00, "boxType": "unit" }
+    { "medicationId": "uuid", "amount": 2, "boxType": "unit" }
   ]
 }
 ```
+
+> O `totalValue` de cada item **não** é enviado pelo frontend — o backend o calcula (`amount * boxPrice` para `box`, `amount * unitPrice` para `unit`). Campos extras no item são rejeitados pela validação global (`forbidNonWhitelisted`).
 
 **Response `201`:** objeto do pedido criado com status `COMPLETE`.
 
@@ -145,7 +147,6 @@ interface CreateOrderDTO {
   orderItems: {
     medicationId: string
     amount: number
-    totalValue: number
     boxType: 'unit' | 'box'
   }[]
 }
