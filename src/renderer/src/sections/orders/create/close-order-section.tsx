@@ -102,7 +102,7 @@ function CloseOrderSection({
             onClick={onCancel}
             disabled={isLoading}
           >
-            Cancelar Venda
+            Voltar
           </Button>
         </div>
       </form>
