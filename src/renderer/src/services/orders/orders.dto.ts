@@ -39,7 +39,7 @@ export interface OrderItemDetail {
     name: string
     unitPrice: number
     boxPrice: number
-  }
+  } | null
 }
 
 export interface OrderDetail {

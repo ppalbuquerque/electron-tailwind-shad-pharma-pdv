@@ -13,15 +13,16 @@ export const orderDetailItemsColumns: ColumnDef<OrderItemDetail>[] = [
     accessorKey: 'medication.name',
     header: 'Medicamento',
     cell: ({ row }) => {
-      const name: string = row.original.medication.name
-      return <span>{name}</span>
+      const medication = row.original.medication
+      return <span>{medication?.name ?? 'Medicamento removido'}</span>
     }
   },
   {
     accessorKey: 'medication.id',
     header: 'ID do produto',
     cell: ({ row }) => {
-      const id: string = row.original.medication.id
+      const id = row.original.medication?.id
+      if (!id) return <span className="text-muted-foreground">—</span>
       return (
         <span className="font-mono text-sm" title={id}>
           #{id.slice(0, 8)}

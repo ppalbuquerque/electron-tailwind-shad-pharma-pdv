@@ -118,6 +118,8 @@ src/renderer/src/
 }
 ```
 
+> **`medication` pode ser `null`.** Quando o medicamento é removido do catálogo (`DELETE /medication/:id`), o item do pedido persiste mas a relação passa a resolver para `null`. O frontend deve tratar esse caso ao renderizar (ver regra 9 na seção 8).
+
 ---
 
 ### `PUT /orders/cancel/:id` — Cancelar pedido
@@ -178,12 +180,13 @@ interface OrderItemDetail {
   amount: number
   totalValue: number
   boxType: 'unit' | 'box'
+  // `null` quando o medicamento foi removido do catálogo (relação órfã)
   medication: {
     id: number
     name: string
     unitPrice: number
     boxPrice: number
-  }
+  } | null
 }
 
 interface OrderDetail {
@@ -280,6 +283,7 @@ Orquestra o fluxo de criação de pedido: adicionar itens, calcular totais, conf
 6. Pedidos só podem ser criados enquanto há um checkout aberto.
 7. No fechamento do pedido, a venda só é criada quando `paymentValue` (valor do pagamento) for **maior ou igual** ao `totalValue` do pedido (`orderTotalRaw`, em centavos). Valor de pagamento **igual** ao total é válido.
 8. Se `paymentValue` for **menor** que `totalValue`, o pedido **não** é criado e o usuário recebe um toast vermelho (`toast.error`) com a mensagem exata `Valor de pagamento insuficiente`. A validação vive em `validateAndConfirm` (`effects/orders/useCloseOrderSection.viewmodel.ts`).
+9. Na tabela de detalhes do pedido (`components/orders/order-detail-items-columns.tsx`), quando `medication` é `null` (medicamento removido do catálogo), a coluna **Medicamento** exibe o texto `Medicamento removido` e a coluna **ID do produto** exibe `—`. Isso evita o crash ao acessar `medication.name`/`medication.id` de itens órfãos.
 
 ---
 
