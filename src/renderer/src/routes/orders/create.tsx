@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { DataTable } from '@/components/ui/data-table'
 
 import { AddMedicationDialog } from '@/sections/orders/create/add-medication-dialog'
+import { CancelOrderDialog } from '@/sections/orders/create/cancel-order-dialog'
 import { EmptyOrderItensTable } from '@/sections/orders/create/empty-order-itens-table'
 import { columns } from '@/sections/orders/create/order-itens-columns'
 import { AddOrderItem } from '@/sections/orders/create/add-order-item'
@@ -49,7 +50,11 @@ function CreateOrder(): ReactNode {
     searchValue,
     orderItens,
     selectedMedication,
-    orderTotalRaw
+    orderTotalRaw,
+    isCancelModalOpen,
+    openCancelOrderModal,
+    dismissCancelOrderModal,
+    handleConfirmCancelOrder
   } = useCreateOrderViewModel()
 
   return (
@@ -95,7 +100,12 @@ function CreateOrder(): ReactNode {
               >
                 Fechar Venda (ESC)
               </Button>
-              <Button className="flex-1" variant="destructive">
+              <Button
+                className="flex-1 disabled:bg-neutral-300 disabled:text-neutral-500 disabled:cursor-not-allowed"
+                variant="destructive"
+                onClick={openCancelOrderModal}
+                disabled={orderItens.length === 0}
+              >
                 Cancelar Venda
               </Button>
             </div>
@@ -106,6 +116,11 @@ function CreateOrder(): ReactNode {
         open={searchMedicationDialogIsOpen}
         defaultSearchValue={searchValue}
         handleOnMedicationDialogConfirm={handleOnMedicationDialogConfirm}
+      />
+      <CancelOrderDialog
+        open={isCancelModalOpen}
+        onConfirm={handleConfirmCancelOrder}
+        onDismiss={dismissCancelOrderModal}
       />
     </div>
   )
