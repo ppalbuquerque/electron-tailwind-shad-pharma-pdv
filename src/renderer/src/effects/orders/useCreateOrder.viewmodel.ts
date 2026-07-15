@@ -58,14 +58,14 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
 
   const { mutate: createOrderMutate, isPending } = useMutation({
     mutationFn: (payload: CreateOrderDTO) => OrdersService.createOrder(payload),
-    onSuccess: (data, variables, onMutateResult) => {
+    onSuccess: () => {
       toast.success('Venda realizada com sucesso')
       dispatch({ type: 'resetOrderContext' })
       setIsClosingOrder(false)
-      setFocus('medicationName')
       reset()
+      setTimeout(() => setFocus('medicationName'), 0)
     },
-    onError(error, variables, onMutateResult) {
+    onError() {
       toast.error('Ocorreu um erro ao registrar a venda')
     }
   })
