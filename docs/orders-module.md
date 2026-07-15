@@ -35,6 +35,7 @@ src/renderer/src/
 ├── sections/orders/create/
 │   ├── add-medication-dialog.tsx
 │   ├── add-order-item.tsx
+│   ├── cancel-order-dialog.tsx
 │   ├── close-order-section.tsx
 │   ├── empty-order-itens-table.tsx
 │   ├── order-itens-columns.tsx
@@ -269,7 +270,40 @@ Gerencia paginação, filtros de status e intervalo de datas para a listagem de 
 
 **Arquivo:** `effects/orders/useCreateOrder.viewmodel.ts`
 
-Orquestra o fluxo de criação de pedido: adicionar itens, calcular totais, confirmar pagamento.
+Orquestra o fluxo de criação de pedido: adicionar itens, calcular totais, confirmar pagamento e cancelar a venda.
+
+**`resetOrder()`** — isola o reset completo da Order ao estado inicial:
+- `dispatch({ type: 'resetOrderContext' })` (limpa `items` e `selectedMedication` do contexto)
+- limpa o estado local: `searchMedicationDialogIsOpen`, `searchValue`, `isClosingOrder`
+- `reset()` do formulário de busca + refoco no input `medicationName`
+
+O `onSuccess` da mutation de criação reaproveita `resetOrder()` após o toast de sucesso.
+
+**Estado e handlers do modal de cancelamento** expostos ao componente:
+
+```typescript
+interface CreateOrderViewModel {
+  // ...demais propriedades do fluxo de criação
+  isCancelModalOpen: boolean
+  openCancelOrderModal: () => void      // ignora clique quando não há itens
+  dismissCancelOrderModal: () => void
+  handleConfirmCancelOrder: () => void  // chama resetOrder() + fecha o modal
+}
+```
+
+#### `CancelOrderDialog`
+
+**Arquivo:** `sections/orders/create/cancel-order-dialog.tsx`
+
+Modal de confirmação de cancelamento da venda, **controlado por props** (sem estado ou hotkeys próprios — o `open` vive no `useCreateOrderViewModel`).
+
+| Prop | Tipo | Observação |
+|------|------|------------|
+| `open` | `boolean` | Controla a visibilidade do `Dialog` |
+| `onConfirm` | `() => void` | Botão "Cancelar Venda" (destructive, à esquerda) → dispara `resetOrder()` + fecha |
+| `onDismiss` | `() => void` | Botão "Não Cancelar" (outline, à direita), fechar via `onOpenChange`/`Esc` |
+
+Título: `Deseja cancelar a venda?` · Texto: `Ao cancelar essa venda todos os itens adicionados serão removidos da venda atual.`
 
 ---
 
@@ -284,6 +318,9 @@ Orquestra o fluxo de criação de pedido: adicionar itens, calcular totais, conf
 7. No fechamento do pedido, a venda só é criada quando `paymentValue` (valor do pagamento) for **maior ou igual** ao `totalValue` do pedido (`orderTotalRaw`, em centavos). Valor de pagamento **igual** ao total é válido.
 8. Se `paymentValue` for **menor** que `totalValue`, o pedido **não** é criado e o usuário recebe um toast vermelho (`toast.error`) com a mensagem exata `Valor de pagamento insuficiente`. A validação vive em `validateAndConfirm` (`effects/orders/useCloseOrderSection.viewmodel.ts`).
 9. Na tabela de detalhes do pedido (`components/orders/order-detail-items-columns.tsx`), quando `medication` é `null` (medicamento removido do catálogo), a coluna **Medicamento** exibe o texto `Medicamento removido` e a coluna **ID do produto** exibe `—`. Isso evita o crash ao acessar `medication.name`/`medication.id` de itens órfãos.
+10. Na tela de criação (`/orders/create`), o botão "Cancelar Venda" fica `disabled` (representação visual cinza via classes `disabled:bg-neutral-300`) quando `orderItens.length === 0`; habilitado com 1 ou mais itens.
+11. O cancelamento da venda é acionado **apenas por clique** — a tecla `Esc` **não** cancela. Ao clicar, abre-se o `CancelOrderDialog` (título "Deseja cancelar a venda?"). Confirmar ("Cancelar Venda") dispara `resetOrder()` e fecha o modal; "Não Cancelar" apenas fecha.
+12. O `Esc` da tela mantém o comportamento existente (com itens abre a seção de pagamento; sem itens devolve o foco à sidebar). Enquanto o `CancelOrderDialog` está aberto, o `Esc` do escopo `CONTENT` fica desabilitado (guarda `!isCancelModalOpen`) para não abrir a seção de pagamento; o `Esc` dentro do modal apenas o fecha (comportamento nativo do Radix, equivalente a "Não Cancelar"). O texto "Confirmar Venda (ESC)" da seção de pagamento permanece inalterado.
 
 ---
 
