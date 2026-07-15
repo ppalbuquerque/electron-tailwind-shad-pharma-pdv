@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/dialog'
 import { orderDetailItemsColumns } from '@/components/orders/order-detail-items-columns'
 import { useOrderDetailViewModel } from '@/effects/orders/useOrderDetail.viewmodel'
-import { formatMoney } from '@/utils/format-money'
+import { formatMoneyFromCents } from '@/utils/format-money'
 import { OrderDetail } from '@/services/orders/orders.dto'
 
 const STATUS_LABEL: Record<OrderDetail['status'], string> = {
@@ -108,7 +108,9 @@ function OrderDetailPage(): ReactNode {
               <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
                 Total
               </span>
-              <span className="text-sm font-semibold">{formatMoney(order.totalValue)}</span>
+              <span className="text-sm font-semibold">
+                {formatMoneyFromCents(order.totalValue)}
+              </span>
             </div>
           </div>
         </div>

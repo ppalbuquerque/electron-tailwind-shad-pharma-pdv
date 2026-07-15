@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table'
 
 import { OrderItemDetail } from '@/services/orders/orders.dto'
-import { formatMoney } from '@/utils/format-money'
+import { formatMoneyFromCents } from '@/utils/format-money'
 
 const BOX_TYPE_LABEL: Record<OrderItemDetail['boxType'], string> = {
   unit: 'Unidade',
@@ -50,7 +50,7 @@ export const orderDetailItemsColumns: ColumnDef<OrderItemDetail>[] = [
     header: 'Total',
     cell: ({ row }) => {
       const value: number = row.getValue('totalValue')
-      return <span>{formatMoney(value)}</span>
+      return <span>{formatMoneyFromCents(value)}</span>
     }
   }
 ]
