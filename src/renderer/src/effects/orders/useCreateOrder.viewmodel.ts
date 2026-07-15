@@ -34,6 +34,10 @@ interface CreateOrderViewModel {
   orderItens: OrderItem[]
   orderTotalRaw: number
   selectedMedication: Medication | undefined
+  isCancelModalOpen: boolean
+  openCancelOrderModal: () => void
+  dismissCancelOrderModal: () => void
+  handleConfirmCancelOrder: () => void
 }
 
 function useCreateOrderViewModel(): CreateOrderViewModel {
@@ -41,6 +45,7 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
   const [searchMedicationDialogIsOpen, setSearchMedicationDialogIsOpen] = useState(false)
   const [searchValue, setSearchValue] = useState('')
   const [isClosingOrder, setIsClosingOrder] = useState(false)
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
   const { dispatch, state } = useCreateOrder()
   const { focusByPath } = useSidebarNavigationContext()
 
@@ -56,14 +61,20 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     }, 0)
   }, [state.items])
 
+  const resetOrder = (): void => {
+    dispatch({ type: 'resetOrderContext' })
+    setSearchMedicationDialogIsOpen(false)
+    setSearchValue('')
+    setIsClosingOrder(false)
+    reset()
+    setTimeout(() => setFocus('medicationName'), 0)
+  }
+
   const { mutate: createOrderMutate, isPending } = useMutation({
     mutationFn: (payload: CreateOrderDTO) => OrdersService.createOrder(payload),
     onSuccess: () => {
       toast.success('Venda realizada com sucesso')
-      dispatch({ type: 'resetOrderContext' })
-      setIsClosingOrder(false)
-      reset()
-      setTimeout(() => setFocus('medicationName'), 0)
+      resetOrder()
     },
     onError() {
       toast.error('Ocorreu um erro ao registrar a venda')
@@ -106,6 +117,20 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     setIsClosingOrder(false)
   }
 
+  const openCancelOrderModal = (): void => {
+    if (state.items.length === 0) return
+    setIsCancelModalOpen(true)
+  }
+
+  const dismissCancelOrderModal = (): void => {
+    setIsCancelModalOpen(false)
+  }
+
+  const handleConfirmCancelOrder = (): void => {
+    resetOrder()
+    setIsCancelModalOpen(false)
+  }
+
   useHotkeys(
     'esc',
     () => {
@@ -130,7 +155,7 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     },
     {
       scopes: [HotkeyScope.CONTENT],
-      enabled: !searchMedicationDialogIsOpen && !isClosingOrder,
+      enabled: !searchMedicationDialogIsOpen && !isClosingOrder && !isCancelModalOpen,
       enableOnFormTags: true,
     },
   )
@@ -149,7 +174,11 @@ function useCreateOrderViewModel(): CreateOrderViewModel {
     handleOnMedicationDialogConfirm,
     handleCreateOrder,
     handleOpenCloseOrder,
-    handleCancelCloseOrder
+    handleCancelCloseOrder,
+    isCancelModalOpen,
+    openCancelOrderModal,
+    dismissCancelOrderModal,
+    handleConfirmCancelOrder
   }
 }
 
