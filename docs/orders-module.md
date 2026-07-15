@@ -278,6 +278,8 @@ Orquestra o fluxo de criação de pedido: adicionar itens, calcular totais, conf
 4. Após cancelamento bem-sucedido, o cache de lista e detalhe é invalidado (refetch automático).
 5. O redirecionamento para `/orders/list` ocorre 3 segundos após o toast de sucesso.
 6. Pedidos só podem ser criados enquanto há um checkout aberto.
+7. No fechamento do pedido, a venda só é criada quando `paymentValue` (valor do pagamento) for **maior ou igual** ao `totalValue` do pedido (`orderTotalRaw`, em centavos). Valor de pagamento **igual** ao total é válido.
+8. Se `paymentValue` for **menor** que `totalValue`, o pedido **não** é criado e o usuário recebe um toast vermelho (`toast.error`) com a mensagem exata `Valor de pagamento insuficiente`. A validação vive em `validateAndConfirm` (`effects/orders/useCloseOrderSection.viewmodel.ts`).
 
 ---
 
