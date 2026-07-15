@@ -46,8 +46,8 @@ function useCloseOrderSectionViewModel(
 
   const validateAndConfirm = (value: number): void => {
     const valueCents = Math.round(value * 100)
-    if (valueCents <= orderTotalRaw) {
-      toast.error('O valor informado é insuficiente para cobrir o total da venda')
+    if (valueCents < orderTotalRaw) {
+      toast.error('Valor de pagamento insuficiente')
       return
     }
     onConfirm(valueCents)
